@@ -1,0 +1,877 @@
+<Grid xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      x:Name="Root"
+      Background="Transparent"
+      TextOptions.TextFormattingMode="Ideal"
+      UseLayoutRounding="True"
+      SnapsToDevicePixels="True">
+
+    <Grid.Resources>
+        <SolidColorBrush x:Key="TextPrimary" Color="#FFF7F4FB" />
+        <SolidColorBrush x:Key="TextSecondary" Color="#FFABA4B8" />
+        <SolidColorBrush x:Key="TextMuted" Color="#FF827B8E" />
+        <SolidColorBrush x:Key="Accent" Color="#FFBCA9FF" />
+        <SolidColorBrush x:Key="Danger" Color="#FFFF7D88" />
+
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Microsoft YaHei UI" />
+            <Setter Property="Foreground" Value="{StaticResource TextPrimary}" />
+        </Style>
+
+        <Style x:Key="IconButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="30" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Background" Value="#14FFFFFF" />
+            <Setter Property="BorderBrush" Value="#20FFFFFF" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Chrome" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="15">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="#24FFFFFF" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="#12FFFFFF" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="AddButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="28" />
+            <Setter Property="Height" Value="28" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Chrome" CornerRadius="14">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#FFCEC2FF" Offset="0" />
+                                    <GradientStop Color="#FF9D86FF" Offset="1" />
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Opacity" Value="0.88" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Chrome" Property="Opacity" Value="0.72" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CheckButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="27" />
+            <Setter Property="Height" Value="27" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Chrome" Background="{TemplateBinding Background}" CornerRadius="13.5">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="#12FFFFFF" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="GhostButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Padding" Value="5,2" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Chrome" Background="{TemplateBinding Background}" CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="#16FFFFFF" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="#0BFFFFFF" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="MenuActionStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Height" Value="34" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Chrome" Background="{TemplateBinding Background}" CornerRadius="8" Padding="8,0">
+                            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="#15FFFFFF" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ChipButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#11FFFFFF" />
+            <Setter Property="BorderBrush" Value="#18FFFFFF" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Foreground" Value="#DCD6E8" />
+            <Setter Property="FontFamily" Value="Microsoft YaHei UI" />
+            <Setter Property="FontSize" Value="9" />
+            <Setter Property="Padding" Value="8,3" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Chrome" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="#20FFFFFF" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="31" />
+            <Setter Property="FontSize" Value="10.5" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#FF19141F" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Padding" Value="14,0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Chrome" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#FFD1C5FF" Offset="0" />
+                                    <GradientStop Color="#FFA58EFF" Offset="1" />
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Opacity" Value="0.9" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SecondaryButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="31" />
+            <Setter Property="FontSize" Value="10.5" />
+            <Setter Property="Foreground" Value="#EFEAF6" />
+            <Setter Property="Background" Value="#15FFFFFF" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Padding" Value="14,0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Chrome" Background="{TemplateBinding Background}" CornerRadius="8"
+                                Padding="{TemplateBinding Padding}" BorderBrush="#1DFFFFFF" BorderThickness="1">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="#23FFFFFF" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="DangerButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="31" />
+            <Setter Property="FontSize" Value="10.5" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Background" Value="#FFE35F6D" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Padding" Value="14,0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Chrome" Background="{TemplateBinding Background}" CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Opacity" Value="0.9" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CalendarDayStyle" TargetType="Button">
+            <Setter Property="Height" Value="28" />
+            <Setter Property="Margin" Value="1" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="#E7E2EE" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontSize" Value="9.5" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Chrome" Background="{TemplateBinding Background}" CornerRadius="7">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="#1EFFFFFF" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TimeCellStyle" TargetType="Button">
+            <Setter Property="Height" Value="20" />
+            <Setter Property="Margin" Value="1" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="#CFC8DA" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontSize" Value="8.3" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Chrome" Background="{TemplateBinding Background}" CornerRadius="5">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="#21FFFFFF" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SoftCheckBoxStyle" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="#C9C3D4" />
+            <Setter Property="FontFamily" Value="Microsoft YaHei UI" />
+            <Setter Property="FontSize" Value="9.3" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <StackPanel Orientation="Horizontal">
+                            <Border x:Name="Box" Width="15" Height="15" CornerRadius="4"
+                                    Background="#11FFFFFF" BorderBrush="#35FFFFFF" BorderThickness="1"
+                                    VerticalAlignment="Center">
+                                <Path x:Name="Tick" Data="M3.5,8 L6.6,11 L12,5" Stroke="#171220" StrokeThickness="1.8"
+                                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" Visibility="Collapsed"
+                                      Stretch="Uniform" Margin="3" />
+                            </Border>
+                            <ContentPresenter Margin="7,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Box" Property="Background" Value="#FFBCA9FF" />
+                                <Setter TargetName="Box" Property="BorderBrush" Value="#FFBCA9FF" />
+                                <Setter TargetName="Tick" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="GlassToolTip" TargetType="ToolTip">
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="HasDropShadow" Value="False" />
+            <Setter Property="Placement" Value="Mouse" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToolTip">
+                        <Border Background="#F5191A22" BorderBrush="#2BFFFFFF" BorderThickness="1"
+                                CornerRadius="7" Padding="7,4">
+                            <ContentPresenter>
+                                <ContentPresenter.Resources>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="#EAE5F0" />
+                                        <Setter Property="FontFamily" Value="Microsoft YaHei UI" />
+                                        <Setter Property="FontSize" Value="9" />
+                                    </Style>
+                                </ContentPresenter.Resources>
+                            </ContentPresenter>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="ToolTip" BasedOn="{StaticResource GlassToolTip}" />
+
+        <Style TargetType="TextBox">
+            <Setter Property="FontFamily" Value="Microsoft YaHei UI" />
+            <Setter Property="Foreground" Value="{StaticResource TextPrimary}" />
+            <Setter Property="CaretBrush" Value="#FFEADFFF" />
+            <Setter Property="SelectionBrush" Value="#AA8F79FF" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        </Style>
+
+        <Style x:Key="PopupSurfaceStyle" TargetType="Border">
+            <Setter Property="Background" Value="#F4171821" />
+            <Setter Property="BorderBrush" Value="#2BFFFFFF" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="16" />
+        </Style>
+    </Grid.Resources>
+
+    <Border x:Name="GlassCard" CornerRadius="28" BorderThickness="1">
+        <Border.BorderBrush>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="0.7,1">
+                <GradientStop Color="#4DFFFFFF" Offset="0" />
+                <GradientStop Color="#22FFFFFF" Offset="0.5" />
+                <GradientStop Color="#1AFFFFFF" Offset="1" />
+            </LinearGradientBrush>
+        </Border.BorderBrush>
+        <Border.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="0.65,1">
+                <GradientStop Color="#EE171922" Offset="0" />
+                <GradientStop Color="#F20D0F17" Offset="0.58" />
+                <GradientStop Color="#F5090B11" Offset="1" />
+            </LinearGradientBrush>
+        </Border.Background>
+        <Grid x:Name="CardGrid">
+            <Grid Margin="24,20,24,16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Grid x:Name="HeaderArea" Grid.Row="0" Background="Transparent" Cursor="SizeAll">
+                    <StackPanel VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Name="DateText" Text="11.04" FontSize="23" FontWeight="SemiBold"
+                                       FontFamily="SimSun" />
+                            <TextBlock x:Name="WeekdayText" Text="周三 / WED" FontSize="9.4" Foreground="#FF9A93A8"
+                                       Margin="8,0,0,4" VerticalAlignment="Bottom" />
+                        </StackPanel>
+                        <TextBlock x:Name="SummaryText" Text="暂无待办" FontSize="9.8" Foreground="#FF9A93A8"
+                                   Margin="0,3,0,0" TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                        <Button x:Name="ThemeToggleButton" Style="{StaticResource IconButtonStyle}" Width="27" Height="27"
+                                ToolTip="切换深浅外观" AutomationProperties.Name="切换深浅外观">
+                            <Path x:Name="ThemeToggleIcon" Data="M8,1.5 L8,3.1 M8,12.9 L8,14.5 M1.5,8 L3.1,8 M12.9,8 L14.5,8 M3.5,3.5 L4.6,4.6 M11.4,11.4 L12.5,12.5 M12.5,3.5 L11.4,4.6 M4.6,11.4 L3.5,12.5"
+                                  Stroke="#FFF7F4FB" StrokeThickness="1.25" StrokeStartLineCap="Round"
+                                  StrokeEndLineCap="Round" Stretch="Uniform" Width="12" Height="12" />
+                        </Button>
+                        <Button x:Name="MoreButton" Style="{StaticResource IconButtonStyle}" Width="27" Height="27"
+                                Margin="5,0,0,0" ToolTip="设置" AutomationProperties.Name="设置">
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse Width="2.5" Height="2.5" Fill="#FFF7F4FB" Margin="0,0,2.8,0" />
+                                <Ellipse Width="2.5" Height="2.5" Fill="#FFF7F4FB" Margin="0,0,2.8,0" />
+                                <Ellipse Width="2.5" Height="2.5" Fill="#FFF7F4FB" />
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="MinimizeButton" Style="{StaticResource IconButtonStyle}" Width="27" Height="27"
+                                Margin="5,0,0,0" ToolTip="收进系统托盘" AutomationProperties.Name="最小化到系统托盘">
+                            <Path Data="M4,8 L12,8" Stroke="#FFF7F4FB" StrokeThickness="1.4"
+                                  StrokeStartLineCap="Round" StrokeEndLineCap="Round" Stretch="Uniform" Width="11" Height="11" />
+                        </Button>
+                        <Button x:Name="CloseButton" Style="{StaticResource IconButtonStyle}" Width="27" Height="27"
+                                Margin="5,0,0,0" ToolTip="退出浮光待办" AutomationProperties.Name="关闭应用">
+                            <Viewbox Width="10" Height="10">
+                                <Canvas Width="16" Height="16">
+                                    <Path Data="M4,4 L12,12 M12,4 L4,12" Stroke="#FFF7F4FB" StrokeThickness="1.35"
+                                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                                </Canvas>
+                            </Viewbox>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+
+                <Border x:Name="InputBar" Grid.Row="1" Height="45" Margin="0,14,0,0"
+                        Background="#13FFFFFF" BorderBrush="#20FFFFFF" BorderThickness="1" CornerRadius="14">
+                    <Grid Margin="7,0,6,0">
+                        <Button x:Name="AddButton" Style="{StaticResource AddButtonStyle}" HorizontalAlignment="Left"
+                                VerticalAlignment="Center" ToolTip="添加待办" AutomationProperties.Name="添加待办">
+                            <Viewbox Width="12" Height="12">
+                                <Canvas Width="16" Height="16">
+                                    <Path Data="M8,3.2 L8,12.8 M3.2,8 L12.8,8" Stroke="White" StrokeThickness="1.8"
+                                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                                </Canvas>
+                            </Viewbox>
+                        </Button>
+                        <Grid Margin="39,0,33,0" VerticalAlignment="Center">
+                            <TextBlock x:Name="InputPlaceholder" Text="添加待办…" FontSize="11.8"
+                                       Foreground="#FF8A8397" IsHitTestVisible="False" VerticalAlignment="Center" />
+                            <TextBox x:Name="InputBox" MaxLength="500" FontSize="11.8"
+                                     AutomationProperties.Name="新的待办事项" />
+                        </Grid>
+                        <Button x:Name="DueButton" Style="{StaticResource GhostButtonStyle}" Width="27" Height="27"
+                                Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                ToolTip="为下一件待办设置截止时间" AutomationProperties.Name="设置截止时间">
+                            <Viewbox Width="13.5" Height="13.5">
+                                <Canvas Width="16" Height="16">
+                                    <Ellipse Canvas.Left="2.2" Canvas.Top="2.2" Width="11.6" Height="11.6"
+                                             Stroke="#CFC8DA" StrokeThickness="1.25" />
+                                    <Path Data="M8,4.7 L8,8.2 L10.3,9.6" Stroke="#CFC8DA" StrokeThickness="1.25"
+                                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                                </Canvas>
+                            </Viewbox>
+                        </Button>
+                    </Grid>
+                </Border>
+
+                <Grid x:Name="PendingDueRow" Grid.Row="2" Height="22" Margin="1,4,0,0" Visibility="Collapsed">
+                    <Button x:Name="PendingDueButton" Style="{StaticResource GhostButtonStyle}" HorizontalAlignment="Left"
+                            Padding="2,1" ToolTip="修改下一件待办的截止时间" AutomationProperties.Name="下一件待办截止时间">
+                        <StackPanel Orientation="Horizontal">
+                            <Viewbox Width="9.5" Height="9.5" Margin="0,0,4,0">
+                                <Canvas Width="16" Height="16">
+                                    <Ellipse Canvas.Left="2.2" Canvas.Top="2.2" Width="11.6" Height="11.6"
+                                             Stroke="#BCA9FF" StrokeThickness="1.4" />
+                                    <Path Data="M8,4.7 L8,8.2 L10.3,9.6" Stroke="#BCA9FF" StrokeThickness="1.4"
+                                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                                </Canvas>
+                            </Viewbox>
+                            <TextBlock x:Name="PendingDueText" FontSize="9" Foreground="#FFCFC1FF" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="ClearPendingDueButton" Style="{StaticResource GhostButtonStyle}"
+                            HorizontalAlignment="Right" Width="22" Height="20" Padding="0" ToolTip="清除"
+                            AutomationProperties.Name="清除下一件待办的截止时间">
+                        <Viewbox Width="8" Height="8">
+                            <Canvas Width="16" Height="16">
+                                <Path Data="M4,4 L12,12 M12,4 L4,12" Stroke="#8E879A" StrokeThickness="1.4"
+                                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+                </Grid>
+
+                <Grid Grid.Row="3" Margin="1,11,1,0" Height="21">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock x:Name="SectionTitleText" Text="待办" FontSize="10.2" FontWeight="SemiBold" Foreground="#FFDAD4E4" />
+                        <Border Background="#10FFFFFF" CornerRadius="6" Padding="5,1" Margin="6,0,0,0"
+                                VerticalAlignment="Center">
+                            <TextBlock x:Name="ActiveCountText" Text="0" FontFamily="Segoe UI" FontSize="8.5"
+                                       Foreground="#FFB8B1C6" />
+                        </Border>
+                    </StackPanel>
+                    <Button x:Name="SelectModeButton" Style="{StaticResource GhostButtonStyle}"
+                            HorizontalAlignment="Right" Padding="6,2" AutomationProperties.Name="批量选择">
+                        <TextBlock x:Name="SelectModeText" Text="选择" FontSize="8.9" Foreground="#FF9A93A8" />
+                    </Button>
+                </Grid>
+
+                <ScrollViewer x:Name="TagFilterScroll" Grid.Row="4" Height="25" Margin="0,3,0,0"
+                              HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled"
+                              Visibility="Collapsed">
+                    <StackPanel x:Name="TagFilterPanel" Orientation="Horizontal" />
+                </ScrollViewer>
+
+                <ScrollViewer x:Name="TaskScroll" Grid.Row="5" Margin="0,3,0,0"
+                              VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled"
+                              CanContentScroll="False" PanningMode="VerticalOnly" Focusable="False"
+                              Cursor="Arrow">
+                    <StackPanel x:Name="TaskHost">
+                        <StackPanel x:Name="ActiveListPanel" />
+                        <Border x:Name="EmptyState" Padding="10,28,10,24" Visibility="Collapsed">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="暂无待办" FontSize="12.2" FontWeight="SemiBold"
+                                           HorizontalAlignment="Center" Foreground="#FFE1DCEC" />
+                                <TextBlock Text="在上方输入即可添加" FontSize="9.2" HorizontalAlignment="Center"
+                                           Margin="0,4,0,0" Foreground="#FF8B8498" />
+                            </StackPanel>
+                        </Border>
+                        <Grid x:Name="CompletedHost" Visibility="Collapsed" Margin="0,8,0,2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <Button x:Name="CompletedToggleButton" Style="{StaticResource GhostButtonStyle}"
+                                        HorizontalAlignment="Left" Padding="3,2" AutomationProperties.Name="已完成">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Path x:Name="CompletedChevron" Data="M4.5,6.5 L8,10 L11.5,6.5"
+                                              Stroke="#9E97AC" StrokeThickness="1.3" Stretch="Uniform" Width="9" Height="9"
+                                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" Margin="0,0,5,0"
+                                              RenderTransformOrigin="0.5,0.5" />
+                                        <TextBlock x:Name="CompletedCountText" Text="已完成 0" FontSize="9"
+                                                   Foreground="#FF9A93A8" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+                                <Button x:Name="ClearCompletedButton" Style="{StaticResource GhostButtonStyle}"
+                                        HorizontalAlignment="Right" Padding="5,2" Visibility="Collapsed"
+                                        ToolTip="清除所有已完成待办" AutomationProperties.Name="清除已完成">
+                                    <TextBlock Text="清除" FontSize="8.5" Foreground="#FF918B9D" />
+                                </Button>
+                            </Grid>
+                            <StackPanel x:Name="CompletedListPanel" Grid.Row="1" Margin="0,2,0,0" Visibility="Collapsed" />
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <Grid x:Name="NormalFooter" Grid.Row="6" Height="29" Margin="0,3,0,0">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Grid Width="62" Height="3">
+                            <Border Background="#16FFFFFF" CornerRadius="1.5" />
+                            <Border x:Name="ProgressFill" Background="#FFB9A8FF" CornerRadius="1.5" Width="0"
+                                    HorizontalAlignment="Left" />
+                        </Grid>
+                        <TextBlock x:Name="ProgressText" Text="0 / 0 完成" Margin="8,0,0,0" FontFamily="Segoe UI"
+                                   FontSize="8.5" Foreground="#FF898396" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Grid>
+
+                <Grid x:Name="BatchBar" Grid.Row="6" Height="29" Margin="0,3,0,0" Visibility="Collapsed">
+                    <TextBlock x:Name="SelectionCountText" Text="已选 0 项" FontSize="9" Foreground="#FFB9B2C4"
+                               VerticalAlignment="Center" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Button x:Name="SelectAllButton" Style="{StaticResource GhostButtonStyle}" Padding="5,3"
+                                AutomationProperties.Name="全选">
+                            <TextBlock x:Name="SelectAllText" Text="全选" FontSize="8.8" Foreground="#FFC9C2D7" />
+                        </Button>
+                        <Button x:Name="BatchDoneButton" Style="{StaticResource GhostButtonStyle}" Padding="5,3"
+                                AutomationProperties.Name="批量完成">
+                            <TextBlock Text="完成" FontSize="8.8" Foreground="#FFC9C2D7" />
+                        </Button>
+                        <Button x:Name="BatchDueButton" Style="{StaticResource GhostButtonStyle}" Padding="5,3"
+                                AutomationProperties.Name="批量设置截止">
+                            <TextBlock Text="截止" FontSize="8.8" Foreground="#FFC9C2D7" />
+                        </Button>
+                        <Button x:Name="BatchDeleteButton" Style="{StaticResource GhostButtonStyle}" Padding="5,3"
+                                AutomationProperties.Name="批量删除">
+                            <TextBlock Text="删除" FontSize="8.8" Foreground="#FFFF9AA3" />
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+
+            <Grid x:Name="ModalOverlay" Background="#8805060B" Visibility="Collapsed" Opacity="0">
+                <Border x:Name="ModalCard" Width="296" CornerRadius="18" Background="#FA191A23"
+                        BorderBrush="#2FFFFFFF" BorderThickness="1" Padding="19,17,19,16"
+                        HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0"
+                        RenderTransformOrigin="0.5,0.5">
+                    <Border.RenderTransform>
+                        <ScaleTransform ScaleX="0.97" ScaleY="0.97" />
+                    </Border.RenderTransform>
+                    <StackPanel>
+                        <Border x:Name="ModalIconWrap" Width="34" Height="34" CornerRadius="17"
+                                Background="#20FF6E7E" BorderBrush="#35FF8995" BorderThickness="1"
+                                HorizontalAlignment="Left">
+                            <Viewbox Width="14" Height="14">
+                                <Canvas Width="16" Height="16">
+                                    <Path x:Name="ModalIcon" Data="M5,5 L11,11 M11,5 L5,11" Stroke="#FFFF9AA3"
+                                          StrokeThickness="1.6" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                                </Canvas>
+                            </Viewbox>
+                        </Border>
+                        <TextBlock x:Name="ModalTitle" FontSize="14" FontWeight="SemiBold" Margin="0,12,0,0" />
+                        <TextBlock x:Name="ModalBody" FontSize="9.8" Foreground="#FFA39DAF" TextWrapping="Wrap"
+                                   LineHeight="16" Margin="0,5,0,0" />
+                        <CheckBox x:Name="ModalCheck" Style="{StaticResource SoftCheckBoxStyle}"
+                                  Content="同时关闭开机自动显示" Margin="0,12,0,0" Visibility="Collapsed" />
+                        <Grid Margin="0,15,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="9" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Button x:Name="ModalCancelButton" Grid.Column="0" Style="{StaticResource SecondaryButtonStyle}"
+                                    Content="取消" HorizontalAlignment="Stretch" />
+                            <Button x:Name="ModalConfirmButton" Grid.Column="2" Style="{StaticResource DangerButtonStyle}"
+                                    Content="删除" HorizontalAlignment="Stretch" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <Grid x:Name="EditorOverlay" Background="#AA05060B" Visibility="Collapsed" Opacity="0">
+                <Border x:Name="EditorCard" Margin="14" CornerRadius="18" Background="#FB191A23"
+                        BorderBrush="#33FFFFFF" BorderThickness="1" Padding="16,13,16,13"
+                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Opacity="0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0" Height="22">
+                            <TextBlock Text="编辑待办" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" />
+                            <Button x:Name="EditorCloseButton" Style="{StaticResource GhostButtonStyle}" Width="22" Height="20"
+                                    HorizontalAlignment="Right" Padding="0" AutomationProperties.Name="关闭编辑">
+                                <Viewbox Width="8" Height="8">
+                                    <Canvas Width="16" Height="16">
+                                        <Path Data="M4,4 L12,12 M12,4 L4,12" Stroke="#B7B0C2" StrokeThickness="1.4"
+                                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                                    </Canvas>
+                                </Viewbox>
+                            </Button>
+                        </Grid>
+                        <ScrollViewer Grid.Row="1" Margin="0,9,0,8" VerticalScrollBarVisibility="Auto"
+                                      HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel>
+                                <TextBlock Text="标题" FontSize="8.7" Foreground="#FF8F889C" Margin="1,0,0,4" />
+                                <Border Background="#11FFFFFF" BorderBrush="#24FFFFFF" BorderThickness="1" CornerRadius="7"
+                                        Padding="7,5">
+                                    <TextBox x:Name="EditorTitleBox" Height="48" AcceptsReturn="True" TextWrapping="Wrap"
+                                             VerticalContentAlignment="Top" MaxLength="500"
+                                             AutomationProperties.Name="编辑待办标题" />
+                                </Border>
+                                <TextBlock Text="备注" FontSize="8.7" Foreground="#FF8F889C" Margin="1,9,0,4" />
+                                <Border Background="#11FFFFFF" BorderBrush="#24FFFFFF" BorderThickness="1" CornerRadius="7"
+                                        Padding="7,5">
+                                    <TextBox x:Name="EditorNoteBox" Height="62" AcceptsReturn="True" TextWrapping="Wrap"
+                                             VerticalContentAlignment="Top" MaxLength="3000"
+                                             AutomationProperties.Name="待办备注" />
+                                </Border>
+                                <TextBlock Text="标签" FontSize="8.7" Foreground="#FF8F889C" Margin="1,9,0,4" />
+                                <WrapPanel x:Name="EditorTagPanel" MinHeight="22" />
+                                <Grid Margin="0,4,0,0">
+                                    <Border Background="#0FFFFFFF" BorderBrush="#1FFFFFFF" BorderThickness="1" CornerRadius="6"
+                                            Height="25" Margin="0,0,48,0">
+                                        <TextBox x:Name="EditorNewTagBox" FontSize="9.5" MaxLength="20"
+                                                 Padding="6,0" AutomationProperties.Name="新标签名称" />
+                                    </Border>
+                                    <Button x:Name="EditorAddTagButton" Style="{StaticResource SecondaryButtonStyle}"
+                                            Width="42" Height="25" HorizontalAlignment="Right" FontSize="9" Padding="0"
+                                            Content="添加" />
+                                </Grid>
+                                <Button x:Name="EditorDueButton" Style="{StaticResource SecondaryButtonStyle}"
+                                        Height="28" HorizontalAlignment="Left" Padding="9,0" Margin="0,10,0,0"
+                                        FontSize="9.2" AutomationProperties.Name="编辑截止时间" />
+                                <TextBlock x:Name="EditorErrorText" FontSize="8.5" Foreground="#FFFF9CA5"
+                                           Margin="1,7,0,0" Visibility="Collapsed" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </ScrollViewer>
+                        <Grid Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="9" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Button x:Name="EditorCancelButton" Grid.Column="0" Style="{StaticResource SecondaryButtonStyle}"
+                                    Content="取消" HorizontalAlignment="Stretch" />
+                            <Button x:Name="EditorSaveButton" Grid.Column="2" Style="{StaticResource PrimaryButtonStyle}"
+                                    HorizontalAlignment="Stretch" AutomationProperties.Name="保存待办">
+                                <TextBlock Text="保存" FontSize="10.5" FontWeight="SemiBold" Foreground="#FF19141F" />
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Grid x:Name="ResizeGrip" Width="26" Height="26" Margin="0,0,4,4"
+                  HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="#01000000"
+                  Cursor="SizeNWSE" ToolTip="拖动右下角调整窗口大小" AutomationProperties.Name="调整窗口大小">
+                <Path Data="M19,7 L7,19 M19,13 L13,19" Stroke="#77FFFFFF" StrokeThickness="1.3"
+                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+            </Grid>
+        </Grid>
+    </Border>
+
+    <Popup x:Name="MenuPopup" AllowsTransparency="True" StaysOpen="False" PopupAnimation="Fade"
+           Placement="Bottom" VerticalOffset="6">
+        <Border Style="{StaticResource PopupSurfaceStyle}" Width="250" Padding="12,11">
+            <StackPanel x:Name="MoreMenuPanel" />
+        </Border>
+    </Popup>
+
+    <Popup x:Name="TaskMenuPopup" AllowsTransparency="True" StaysOpen="False" PopupAnimation="Fade"
+           Placement="Bottom" VerticalOffset="4">
+        <Border Style="{StaticResource PopupSurfaceStyle}" Width="206" Padding="8">
+            <StackPanel x:Name="TaskMenuPanel" />
+        </Border>
+    </Popup>
+
+    <Popup x:Name="DuePopup" AllowsTransparency="True" StaysOpen="False" PopupAnimation="Fade"
+           Placement="Bottom" VerticalOffset="7">
+        <Border Style="{StaticResource PopupSurfaceStyle}" Width="340" Padding="15,13,15,13">
+            <StackPanel>
+                <Grid Height="21">
+                    <TextBlock Text="截止时间" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button x:Name="DueClearButton" Style="{StaticResource GhostButtonStyle}" Padding="6,2"
+                                Visibility="Collapsed" AutomationProperties.Name="清除截止时间">
+                            <TextBlock Text="清除" FontSize="8.8" Foreground="#FFA9A2B4" />
+                        </Button>
+                        <Button x:Name="DueCloseButton" Style="{StaticResource GhostButtonStyle}" Width="22" Height="20"
+                                Padding="0" AutomationProperties.Name="关闭截止时间选择">
+                            <Viewbox Width="8" Height="8">
+                                <Canvas Width="16" Height="16">
+                                    <Path Data="M4,4 L12,12 M12,4 L4,12" Stroke="#B7B0C2" StrokeThickness="1.4"
+                                          StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                                </Canvas>
+                            </Viewbox>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+
+                <Grid Margin="0,10,0,0" Height="25">
+                    <Button x:Name="DuePrevButton" Style="{StaticResource GhostButtonStyle}" Width="22" Height="22"
+                            HorizontalAlignment="Left" Padding="0" AutomationProperties.Name="上个月">
+                        <Path Data="M9.5,4 L5.5,8 L9.5,12" Stroke="#DAD4E4" StrokeThickness="1.4"
+                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" Stretch="Uniform" Width="9" Height="9" />
+                    </Button>
+                    <Button x:Name="DueMonthButton" Style="{StaticResource GhostButtonStyle}" HorizontalAlignment="Center"
+                            Padding="8,2" AutomationProperties.Name="选择年份和月份">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Name="DueMonthLabel" FontFamily="Segoe UI" FontSize="10.2" FontWeight="SemiBold"
+                                       Foreground="#FFE3DDEC" VerticalAlignment="Center" />
+                            <Path Data="M4.5,6.5 L8,10 L11.5,6.5" Stroke="#9D96A9" StrokeThickness="1.2"
+                                  Stretch="Uniform" Width="8" Height="8" Margin="5,1,0,0" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="DueNextButton" Style="{StaticResource GhostButtonStyle}" Width="22" Height="22"
+                            HorizontalAlignment="Right" Padding="0" AutomationProperties.Name="下个月">
+                        <Path Data="M6.5,4 L10.5,8 L6.5,12" Stroke="#DAD4E4" StrokeThickness="1.4"
+                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" Stretch="Uniform" Width="9" Height="9" />
+                    </Button>
+                </Grid>
+
+                <StackPanel x:Name="DueCalendarArea" Margin="0,6,0,0">
+                    <UniformGrid Columns="7" Rows="1" Margin="0,0,0,2">
+                        <TextBlock Text="一" FontFamily="Segoe UI" FontSize="8" Foreground="#FF7F798B" HorizontalAlignment="Center" />
+                        <TextBlock Text="二" FontFamily="Segoe UI" FontSize="8" Foreground="#FF7F798B" HorizontalAlignment="Center" />
+                        <TextBlock Text="三" FontFamily="Segoe UI" FontSize="8" Foreground="#FF7F798B" HorizontalAlignment="Center" />
+                        <TextBlock Text="四" FontFamily="Segoe UI" FontSize="8" Foreground="#FF7F798B" HorizontalAlignment="Center" />
+                        <TextBlock Text="五" FontFamily="Segoe UI" FontSize="8" Foreground="#FF7F798B" HorizontalAlignment="Center" />
+                        <TextBlock Text="六" FontFamily="Segoe UI" FontSize="8" Foreground="#FF7F798B" HorizontalAlignment="Center" />
+                        <TextBlock Text="日" FontFamily="Segoe UI" FontSize="8" Foreground="#FF7F798B" HorizontalAlignment="Center" />
+                    </UniformGrid>
+                    <UniformGrid x:Name="DueDayGrid" Columns="7" Rows="6" />
+                </StackPanel>
+
+                <StackPanel x:Name="DueYearMonthPanel" Margin="0,6,0,0" Visibility="Collapsed">
+                    <Grid Height="24">
+                        <Button x:Name="DueYearPrevButton" Style="{StaticResource GhostButtonStyle}" Width="22" Height="22"
+                                HorizontalAlignment="Left" Padding="0" AutomationProperties.Name="上一组年份">
+                            <Path Data="M9.5,4 L5.5,8 L9.5,12" Stroke="#DAD4E4" StrokeThickness="1.4"
+                                  StrokeStartLineCap="Round" StrokeEndLineCap="Round" Stretch="Uniform" Width="9" Height="9" />
+                        </Button>
+                        <TextBlock x:Name="DueYearRangeLabel" FontFamily="Segoe UI" FontSize="9.6"
+                                   Foreground="#FFCFC8DA" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <Button x:Name="DueYearNextButton" Style="{StaticResource GhostButtonStyle}" Width="22" Height="22"
+                                HorizontalAlignment="Right" Padding="0" AutomationProperties.Name="下一组年份">
+                            <Path Data="M6.5,4 L10.5,8 L6.5,12" Stroke="#DAD4E4" StrokeThickness="1.4"
+                                  StrokeStartLineCap="Round" StrokeEndLineCap="Round" Stretch="Uniform" Width="9" Height="9" />
+                        </Button>
+                    </Grid>
+                    <UniformGrid x:Name="DueYearGrid" Columns="4" Rows="3" Margin="0,4,0,0" />
+                    <TextBlock Text="月份" FontSize="8.2" Foreground="#FF817A8D" Margin="1,8,0,3" />
+                    <UniformGrid x:Name="DueMonthGrid" Columns="4" Rows="3" />
+                </StackPanel>
+
+                <Border Height="1" Background="#14FFFFFF" Margin="0,10,0,9" />
+
+                <Grid Margin="0,3,0,0" Height="30">
+                    <TextBlock Text="时间" FontSize="9.8" Foreground="#FFA39DAF" VerticalAlignment="Center" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Button x:Name="DueHourButton" Style="{StaticResource SecondaryButtonStyle}" Width="47" Height="27"
+                                Padding="0" FontSize="12" FontFamily="Segoe UI" AutomationProperties.Name="选择小时">
+                            <TextBlock x:Name="DueHourText" Text="18" FontFamily="Segoe UI" FontSize="13"
+                                       FontWeight="SemiBold" Foreground="#FFF5F0FB" />
+                        </Button>
+                        <TextBlock Text=":" FontFamily="Segoe UI" FontSize="13" Foreground="#FFBBB4C6"
+                                   Margin="4,0,4,0" VerticalAlignment="Center" />
+                        <Button x:Name="DueMinuteButton" Style="{StaticResource SecondaryButtonStyle}" Width="47" Height="27"
+                                Padding="0" FontSize="12" FontFamily="Segoe UI" AutomationProperties.Name="选择分钟">
+                            <TextBlock x:Name="DueMinuteText" Text="00" FontFamily="Segoe UI" FontSize="13"
+                                       FontWeight="SemiBold" Foreground="#FFF5F0FB" />
+                        </Button>
+                        <TextBlock Text="24 小时" FontSize="8" Foreground="#FF817A8D" Margin="8,0,1,0"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </Grid>
+                <TextBlock x:Name="DueTimeDropdownHint" FontSize="8.5" Foreground="#FF888195" Margin="1,5,0,3"
+                           Visibility="Collapsed" />
+                <ScrollViewer x:Name="DueTimeDropdownScroll" Height="100" Visibility="Collapsed"
+                              VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel x:Name="DueTimeDropdownList" />
+                </ScrollViewer>
+                <TextBlock x:Name="DueErrorText" FontSize="8.5" Foreground="#FFFF9CA5" Margin="1,6,0,0"
+                           Visibility="Collapsed" TextWrapping="Wrap" />
+                <Grid Margin="0,11,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="9" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="DueCancelButton" Grid.Column="0" Style="{StaticResource SecondaryButtonStyle}"
+                            Content="取消" HorizontalAlignment="Stretch" AutomationProperties.Name="取消截止时间设置" />
+                    <Button x:Name="DueApplyButton" Grid.Column="2" Style="{StaticResource PrimaryButtonStyle}"
+                            HorizontalAlignment="Stretch" AutomationProperties.Name="确定截止时间">
+                        <TextBlock Text="确定" FontSize="10.5" FontWeight="SemiBold" Foreground="#FF19141F" />
+                    </Button>
+                </Grid>
+            </StackPanel>
+        </Border>
+    </Popup>
+</Grid>

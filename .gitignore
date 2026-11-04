@@ -1,0 +1,33 @@
+# Build / release artifacts
+/build/
+/release/
+/icon-options/
+/style-samples/
+/tools/
+
+# Generated icon size previews (keep app.ico, app.alert.ico, app.png, noise.png)
+/assets/app-*.png
+/assets/app-alert-*.png
+
+# Test binaries and isolated test data
+/tests/*.exe
+/tests/test-data-*/
+/test-*/
+
+# Runtime data / logs
+data.json
+data.bak.json
+data.corrupt-*.json
+app.log
+debug.log
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# OS
+Thumbs.db
+Desktop.ini
