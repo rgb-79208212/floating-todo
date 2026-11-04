@@ -71,7 +71,7 @@ namespace FloatingTodo
             string title = TaskService.NormalizeTitle(_editorTitleBox.Text);
             if (title.Length == 0)
             {
-                _editorErrorText.Text = "标题不能为空。";
+                _editorErrorText.Text = LanguageManager.T("标题不能为空。");
                 _editorErrorText.Visibility = Visibility.Visible;
                 _editorTitleBox.Focus();
                 return;
@@ -97,7 +97,7 @@ namespace FloatingTodo
             _editorTagPanel.Children.Clear();
             if (_state.Tags.Count == 0)
             {
-                TextBlock empty = UiKit.Text("还没有标签，输入名称后添加", 8.4, "#FF7F798B");
+                TextBlock empty = UiKit.Text(LanguageManager.T("还没有标签，输入名称后添加"), 8.4, "#FF7F798B");
                 empty.Margin = new Thickness(1, 4, 0, 4);
                 _editorTagPanel.Children.Add(empty);
                 return;
@@ -130,7 +130,7 @@ namespace FloatingTodo
                 }
                 string id = tag.Id;
                 chip.Click += delegate { ToggleEditorTag(id); };
-                AutomationProperties.SetName(chip, (selected ? "取消标签：" : "添加标签：") + tag.Name);
+                AutomationProperties.SetName(chip, LanguageManager.T(selected ? "取消标签：" : "添加标签：") + tag.Name);
                 _editorTagPanel.Children.Add(chip);
             }
         }
@@ -166,8 +166,9 @@ namespace FloatingTodo
         {
             if (_editorDueButton == null) return;
             string text;
-            if (_editorPendingDue.HasValue) text = "截止：" + TaskService.FormatDue(_editorPendingDue.Value, DateTime.Now);
-            else text = "设置截止时间";
+            if (_editorPendingDue.HasValue) text = LanguageManager.Format("截止：{0}",
+                TaskService.FormatDue(_editorPendingDue.Value, DateTime.Now, LanguageManager.Current));
+            else text = LanguageManager.T("设置截止时间");
             _editorDueButton.Content = new TextBlock
             {
                 Text = text,

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace FloatingTodo
 {
@@ -169,23 +170,50 @@ namespace FloatingTodo
 
         public static DuePresentation DescribeDue(TodoTask task, DateTime now, int leadMinutes)
         {
+            return DescribeDue(task, now, leadMinutes, AppLanguage.Chinese);
+        }
+
+        public static DuePresentation DescribeDue(TodoTask task, DateTime now, int leadMinutes, AppLanguage language)
+        {
             DuePresentation result = new DuePresentation();
             if (task == null || !task.DueAt.HasValue || task.Done) return result;
             result.HasDue = true;
             DateTime due = task.DueAt.Value;
             result.Overdue = due <= now;
             result.Urgent = due <= now.AddMinutes(Math.Max(1, leadMinutes));
-            result.Primary = FormatDue(due, now);
-            if (result.Overdue) result.Secondary = "已逾期 " + Humanize(now - due);
-            else if (result.Urgent) result.Secondary = "还剩 " + Humanize(due - now);
+            result.Primary = FormatDue(due, now, language);
+            if (result.Overdue)
+                result.Secondary = language == AppLanguage.English
+                    ? "Overdue " + Humanize(now - due, language)
+                    : "已逾期 " + Humanize(now - due, language);
+            else if (result.Urgent)
+                result.Secondary = language == AppLanguage.English
+                    ? Humanize(due - now, language) + " left"
+                    : "还剩 " + Humanize(due - now, language);
             else result.Secondary = "";
             return result;
         }
 
         public static string FormatDue(DateTime due, DateTime now)
         {
+            return FormatDue(due, now, AppLanguage.Chinese);
+        }
+
+        public static string FormatDue(DateTime due, DateTime now, AppLanguage language)
+        {
             string time = due.ToString("HH:mm");
             DateTime today = now.Date;
+            if (language == AppLanguage.English)
+            {
+                if (due.Date == today) return "Today " + time;
+                if (due.Date == today.AddDays(1)) return "Tomorrow " + time;
+                if (due.Date == today.AddDays(2)) return "In 2 days " + time;
+                if (due.Date == today.AddDays(-1)) return "Yesterday " + time;
+                if (due.Date == today.AddDays(-2)) return "2 days ago " + time;
+                if (due.Date > today && due.Date < today.AddDays(7)) return WeekdayShort(due.DayOfWeek) + " " + time;
+                if (due.Year == now.Year) return due.ToString("MMM d HH:mm", CultureInfo.InvariantCulture);
+                return due.ToString("MMM d, yyyy HH:mm", CultureInfo.InvariantCulture);
+            }
             if (due.Date == today) return "今天 " + time;
             if (due.Date == today.AddDays(1)) return "明天 " + time;
             if (due.Date == today.AddDays(2)) return "后天 " + time;
@@ -198,8 +226,27 @@ namespace FloatingTodo
 
         public static string Humanize(TimeSpan span)
         {
+            return Humanize(span, AppLanguage.Chinese);
+        }
+
+        public static string Humanize(TimeSpan span, AppLanguage language)
+        {
             if (span.TotalSeconds < 0) span = span.Negate();
             double minutes = span.TotalMinutes;
+            if (language == AppLanguage.English)
+            {
+                if (minutes < 1) return "less than 1 min";
+                if (minutes < 60) return ((int)Math.Ceiling(minutes)).ToString() + " min";
+                if (minutes < 60 * 24)
+                {
+                    int h = (int)Math.Floor(minutes / 60);
+                    int m = (int)Math.Round(minutes % 60);
+                    if (m >= 58) { h++; m = 0; }
+                    return m == 0 ? h.ToString() + "h" : h.ToString() + "h " + m.ToString() + "m";
+                }
+                int days = (int)Math.Floor(minutes / (60 * 24));
+                return days.ToString() + "d";
+            }
             if (minutes < 1) return "不到 1 分钟";
             if (minutes < 60) return ((int)Math.Ceiling(minutes)).ToString() + " 分钟";
             if (minutes < 60 * 24)
@@ -209,12 +256,30 @@ namespace FloatingTodo
                 if (m >= 58) { h++; m = 0; }
                 return m == 0 ? h.ToString() + " 小时" : h.ToString() + " 小时 " + m.ToString() + " 分钟";
             }
-            int days = (int)Math.Floor(minutes / (60 * 24));
-            return days.ToString() + " 天";
+            int chineseDays = (int)Math.Floor(minutes / (60 * 24));
+            return chineseDays.ToString() + " 天";
         }
 
         public static string WeekdayName(DayOfWeek day)
         {
+            return WeekdayName(day, AppLanguage.Chinese);
+        }
+
+        public static string WeekdayName(DayOfWeek day, AppLanguage language)
+        {
+            if (language == AppLanguage.English)
+            {
+                switch (day)
+                {
+                    case DayOfWeek.Monday: return "Monday";
+                    case DayOfWeek.Tuesday: return "Tuesday";
+                    case DayOfWeek.Wednesday: return "Wednesday";
+                    case DayOfWeek.Thursday: return "Thursday";
+                    case DayOfWeek.Friday: return "Friday";
+                    case DayOfWeek.Saturday: return "Saturday";
+                    default: return "Sunday";
+                }
+            }
             switch (day)
             {
                 case DayOfWeek.Monday: return "周一";
@@ -227,17 +292,50 @@ namespace FloatingTodo
             }
         }
 
+        public static string WeekdayShort(DayOfWeek day)
+        {
+            switch (day)
+            {
+                case DayOfWeek.Monday: return "Mon";
+                case DayOfWeek.Tuesday: return "Tue";
+                case DayOfWeek.Wednesday: return "Wed";
+                case DayOfWeek.Thursday: return "Thu";
+                case DayOfWeek.Friday: return "Fri";
+                case DayOfWeek.Saturday: return "Sat";
+                default: return "Sun";
+            }
+        }
+
         public static string DateHeadline(DateTime now)
         {
-            return now.ToString("M月d日");
+            return DateHeadline(now, AppLanguage.Chinese);
+        }
+
+        public static string DateHeadline(DateTime now, AppLanguage language)
+        {
+            return language == AppLanguage.English
+                ? now.ToString("MMM d", CultureInfo.InvariantCulture)
+                : now.ToString("M月d日");
         }
 
         public static string WeekdayLine(DateTime now)
         {
-            return "星期" + WeekdayName(now.DayOfWeek).Replace("周", "");
+            return WeekdayLine(now, AppLanguage.Chinese);
+        }
+
+        public static string WeekdayLine(DateTime now, AppLanguage language)
+        {
+            return language == AppLanguage.English
+                ? now.ToString("ddd", CultureInfo.InvariantCulture).ToUpperInvariant()
+                : "星期" + WeekdayName(now.DayOfWeek).Replace("周", "");
         }
 
         public static string Summary(AppState state, DateTime now)
+        {
+            return Summary(state, now, AppLanguage.Chinese);
+        }
+
+        public static string Summary(AppState state, DateTime now, AppLanguage language)
         {
             int active = 0;
             int done = 0;
@@ -250,6 +348,15 @@ namespace FloatingTodo
                 active++;
                 if (IsUrgent(t, now, state.Settings.LeadMinutes)) urgent++;
             }
+            if (language == AppLanguage.English)
+            {
+                if (active == 0 && done == 0) return "No tasks";
+                if (active == 0) return "All done";
+                string english = active.ToString() + (active == 1 ? " open" : " open");
+                if (urgent > 0) english += " · " + urgent.ToString() + " due soon";
+                if (done > 0) english += " · " + done.ToString() + " completed";
+                return english;
+            }
             if (active == 0 && done == 0) return "暂无待办";
             if (active == 0) return "已全部完成";
             string text = active.ToString() + " 项未完成";
@@ -260,6 +367,23 @@ namespace FloatingTodo
 
         public static string LeadLabel(int minutes)
         {
+            return LeadLabel(minutes, AppLanguage.Chinese);
+        }
+
+        public static string LeadLabel(int minutes, AppLanguage language)
+        {
+            if (language == AppLanguage.English)
+            {
+                if (minutes < 60) return minutes.ToString() + " min";
+                if (minutes == 60) return "1 hour";
+                if (minutes < 1440) return (minutes / 60).ToString() + " hours";
+                if (minutes % 1440 == 0)
+                {
+                    int days = minutes / 1440;
+                    return days == 1 ? "1 day" : days.ToString() + " days";
+                }
+                return minutes.ToString() + " min";
+            }
             if (minutes < 60) return minutes.ToString() + " 分钟";
             if (minutes == 60) return "1 小时";
             if (minutes < 1440) return (minutes / 60).ToString() + " 小时";

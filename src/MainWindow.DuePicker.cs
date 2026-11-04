@@ -69,7 +69,7 @@ namespace FloatingTodo
                 _selectionMode = false;
                 _normalFooter.Visibility = Visibility.Visible;
                 _batchBar.Visibility = Visibility.Collapsed;
-                _selectModeText.Text = "选择";
+                _selectModeText.Text = LanguageManager.T("选择");
                 RebuildAll(true);
                 UpdateTrayState();
             });
@@ -91,7 +91,7 @@ namespace FloatingTodo
             _monthYearMode = false;
             _dueErrorText.Visibility = Visibility.Collapsed;
             _dueClearButton.Visibility = allowClear ? Visibility.Visible : Visibility.Collapsed;
-            _dueMonthLabel.Text = _calendarMonth.ToString("yyyy年M月");
+            _dueMonthLabel.Text = MonthLabel(_calendarMonth);
             _duePrevButton.Visibility = Visibility.Visible;
             _dueNextButton.Visibility = Visibility.Visible;
             _dueCalendarArea.Visibility = Visibility.Visible;
@@ -124,7 +124,7 @@ namespace FloatingTodo
                 _dueYearMonthPanel.Visibility = Visibility.Visible;
                 _duePrevButton.Visibility = Visibility.Collapsed;
                 _dueNextButton.Visibility = Visibility.Collapsed;
-                _dueMonthLabel.Text = "返回日历";
+                _dueMonthLabel.Text = LanguageManager.T("返回日历");
             }
             else
             {
@@ -132,8 +132,22 @@ namespace FloatingTodo
                 _dueYearMonthPanel.Visibility = Visibility.Collapsed;
                 _duePrevButton.Visibility = Visibility.Visible;
                 _dueNextButton.Visibility = Visibility.Visible;
-                _dueMonthLabel.Text = _calendarMonth.ToString("yyyy年M月");
+                _dueMonthLabel.Text = MonthLabel(_calendarMonth);
             }
+        }
+
+        private static string MonthLabel(DateTime month)
+        {
+            return LanguageManager.IsEnglish
+                ? month.ToString("MMM yyyy", System.Globalization.CultureInfo.InvariantCulture)
+                : month.ToString("yyyy年M月");
+        }
+
+        private static string MonthName(int month)
+        {
+            return LanguageManager.IsEnglish
+                ? System.Globalization.CultureInfo.InvariantCulture.DateTimeFormat.GetAbbreviatedMonthName(month)
+                : month.ToString() + "月";
         }
 
         private void BuildYearMonthGrids()
@@ -158,7 +172,7 @@ namespace FloatingTodo
                     _pickerYear = year;
                     BuildYearMonthGrids();
                 };
-                AutomationProperties.SetName(button, year.ToString() + "年");
+                AutomationProperties.SetName(button, year.ToString() + (LanguageManager.IsEnglish ? "" : "年"));
                 _dueYearGrid.Children.Add(button);
             }
 
@@ -171,7 +185,7 @@ namespace FloatingTodo
                 button.Style = (Style)_root.Resources["CalendarDayStyle"];
                 button.Height = 25;
                 button.Margin = new Thickness(2);
-                TextBlock label = UiKit.Text(month.ToString() + "月", 9.2, selected ? "#FF19141F" : "#FFDCD7E8");
+                TextBlock label = UiKit.Text(MonthName(month), 9.2, selected ? "#FF19141F" : "#FFDCD7E8");
                 if (selected) label.FontWeight = FontWeights.SemiBold;
                 button.Content = label;
                 if (selected) button.Background = UiKit.Brush("#E0BCA9FF");
@@ -185,10 +199,10 @@ namespace FloatingTodo
                     _dueYearMonthPanel.Visibility = Visibility.Collapsed;
                     _duePrevButton.Visibility = Visibility.Visible;
                     _dueNextButton.Visibility = Visibility.Visible;
-                    _dueMonthLabel.Text = _calendarMonth.ToString("yyyy年M月");
+                    _dueMonthLabel.Text = MonthLabel(_calendarMonth);
                     BuildCalendar();
                 };
-                AutomationProperties.SetName(button, month.ToString() + "月");
+                AutomationProperties.SetName(button, MonthName(month));
                 _dueMonthGrid.Children.Add(button);
             }
         }
@@ -198,7 +212,7 @@ namespace FloatingTodo
         private void BuildCalendar()
         {
             _dueDayGrid.Children.Clear();
-            _dueMonthLabel.Text = _calendarMonth.ToString("yyyy年M月");
+            _dueMonthLabel.Text = MonthLabel(_calendarMonth);
             int leading = ((int)_calendarMonth.DayOfWeek + 6) % 7;
             int days = DateTime.DaysInMonth(_calendarMonth.Year, _calendarMonth.Month);
             DateTime today = DateTime.Now.Date;
@@ -229,7 +243,9 @@ namespace FloatingTodo
                     _dueErrorText.Visibility = Visibility.Collapsed;
                     BuildCalendar();
                 };
-                AutomationProperties.SetName(cell, date.ToString("yyyy年M月d日") + " " + TaskService.WeekdayName(date.DayOfWeek));
+                AutomationProperties.SetName(cell, (LanguageManager.IsEnglish
+                    ? date.ToString("MMM d, yyyy", System.Globalization.CultureInfo.InvariantCulture)
+                    : date.ToString("yyyy年M月d日")) + " " + TaskService.WeekdayName(date.DayOfWeek, LanguageManager.Current));
                 _dueDayGrid.Children.Add(cell);
             }
         }
@@ -257,7 +273,7 @@ namespace FloatingTodo
             _dueTimeDropdownList.Children.Clear();
             int count = hours ? 24 : 60;
             int selected = hours ? _selectedHour : _selectedMinute;
-            _dueTimeDropdownHint.Text = hours ? "选择小时" : "选择分钟";
+            _dueTimeDropdownHint.Text = LanguageManager.T(hours ? "选择小时" : "选择分钟");
             _dueTimeDropdownHint.Visibility = Visibility.Visible;
             for (int i = 0; i < count; i++)
             {
@@ -280,7 +296,7 @@ namespace FloatingTodo
                     UpdateTimeFields();
                     HideTimeDropdown();
                 };
-                AutomationProperties.SetName(option, value.ToString("00") + (hours ? " 时" : " 分"));
+                AutomationProperties.SetName(option, value.ToString("00") + (hours ? LanguageManager.T(" 时") : LanguageManager.T(" 分")));
                 _dueTimeDropdownList.Children.Add(option);
             }
             _dueTimeDropdownScroll.Visibility = Visibility.Visible;
@@ -295,13 +311,13 @@ namespace FloatingTodo
         {
             if (!_selectedDate.HasValue)
             {
-                ShowDueError("请选择一个日期。");
+                ShowDueError(LanguageManager.T("请选择一个日期。"));
                 return;
             }
             DateTime selected = _selectedDate.Value.Date.AddHours(_selectedHour).AddMinutes(_selectedMinute);
             if (selected <= DateTime.Now.AddSeconds(-20))
             {
-                ShowDueError("该时间已经过去，请选择稍后的时间。");
+                ShowDueError(LanguageManager.T("该时间已经过去，请选择稍后的时间。"));
                 return;
             }
             Action<DateTime?> apply = _dueApply;

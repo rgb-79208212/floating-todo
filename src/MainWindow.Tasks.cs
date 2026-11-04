@@ -61,7 +61,7 @@ namespace FloatingTodo
 
             int completedCount = completed.Count;
             _completedHost.Visibility = completedCount > 0 ? Visibility.Visible : Visibility.Collapsed;
-            _completedCountText.Text = "已完成 " + completedCount.ToString();
+            _completedCountText.Text = LanguageManager.Format("已完成 {0}", completedCount);
             bool expanded = _state.Settings.CompletedExpanded;
             _completedListPanel.Visibility = expanded && completedCount > 0 ? Visibility.Visible : Visibility.Collapsed;
             _clearCompletedButton.Visibility = expanded && completedCount > 0 ? Visibility.Visible : Visibility.Collapsed;
@@ -129,7 +129,7 @@ namespace FloatingTodo
                 return;
             }
             _tagFilterScroll.Visibility = Visibility.Visible;
-            Button all = CreateFilterChip("全部", null, string.IsNullOrEmpty(_activeTagFilter));
+            Button all = CreateFilterChip(LanguageManager.T("全部"), null, string.IsNullOrEmpty(_activeTagFilter));
             _tagFilterPanel.Children.Add(all);
             for (int i = 0; i < _state.Tags.Count; i++)
             {
@@ -170,7 +170,7 @@ namespace FloatingTodo
                 _activeTagFilter = _activeTagFilter == tagId ? null : tagId;
                 RebuildAll(true);
             };
-            AutomationProperties.SetName(button, "标签筛选：" + text);
+            AutomationProperties.SetName(button, LanguageManager.Format("标签筛选：{0}", text));
             return button;
         }
 
@@ -207,10 +207,12 @@ namespace FloatingTodo
             check.Height = 27;
             check.VerticalAlignment = VerticalAlignment.Top;
             check.Margin = new Thickness(0, 1, 0, 0);
-            check.ToolTip = _selectionMode ? (_selectedTaskIds.Contains(task.Id) ? "取消选择" : "选择") : (task.Done ? "恢复为待办" : "标记为已完成");
+            check.ToolTip = _selectionMode
+                ? LanguageManager.T(_selectedTaskIds.Contains(task.Id) ? "取消选择" : "选择")
+                : LanguageManager.T(task.Done ? "恢复为待办" : "标记为已完成");
             AutomationProperties.SetName(check, _selectionMode
-                ? (_selectedTaskIds.Contains(task.Id) ? "取消选择：" : "选择：") + task.Title
-                : (task.Done ? "恢复为待办：" : "标记为已完成：") + task.Title);
+                ? LanguageManager.T(_selectedTaskIds.Contains(task.Id) ? "取消选择：" : "选择：") + task.Title
+                : LanguageManager.T(task.Done ? "恢复为待办：" : "标记为已完成：") + task.Title);
 
             Grid checkVisual = new Grid();
             checkVisual.Width = 21;
@@ -357,7 +359,7 @@ namespace FloatingTodo
             }
             if (!string.IsNullOrEmpty(task.Note))
             {
-                TextBlock note = UiKit.Text("备注：" + task.Note.Replace("\r", " ").Replace("\n", " "), 9, "#FF8E879B");
+                TextBlock note = UiKit.Text(LanguageManager.T("备注：") + task.Note.Replace("\r", " ").Replace("\n", " "), 9, "#FF8E879B");
                 note.TextTrimming = TextTrimming.CharacterEllipsis;
                 note.TextWrapping = TextWrapping.NoWrap;
                 note.Margin = new Thickness(0, 4, 0, 0);
@@ -375,8 +377,8 @@ namespace FloatingTodo
             more.BorderThickness = new Thickness(0);
             more.Opacity = task.Done ? 0.4 : 0.72;
             more.Content = UiKit.MoreIcon(13, task.Done ? "#B7B1C3" : "#E5E0EE");
-            more.ToolTip = "更多操作";
-            AutomationProperties.SetName(more, "更多操作 · " + Shorten(task.Title, 18));
+            more.ToolTip = LanguageManager.T("更多操作");
+            AutomationProperties.SetName(more, LanguageManager.Format("更多操作 · {0}", Shorten(task.Title, 18)));
             more.Visibility = _selectionMode ? Visibility.Collapsed : Visibility.Visible;
             more.VerticalAlignment = VerticalAlignment.Center;
             more.HorizontalAlignment = HorizontalAlignment.Right;
@@ -457,7 +459,7 @@ namespace FloatingTodo
             hit.Padding = new Thickness(6, 2, 7, 2);
             hit.BorderThickness = new Thickness(0);
             hit.Cursor = Cursors.Hand;
-            hit.ToolTip = "更改截止时间";
+            hit.ToolTip = LanguageManager.T("更改截止时间");
             if (completedSection)
                 hit.Background = Brushes.Transparent;
             else if (urgent)
@@ -475,7 +477,7 @@ namespace FloatingTodo
                 FrameworkElement checkIcon = UiKit.CheckIcon(9, "#FF8E889B", 1.2);
                 checkIcon.Margin = new Thickness(0, 0, 4, 0);
                 meta.Children.Add(checkIcon);
-                TextBlock done = UiKit.Text("已完成", 8.8, "#FF8E889B");
+                TextBlock done = UiKit.Text(LanguageManager.T("已完成"), 8.8, "#FF8E889B");
                 meta.Children.Add(done);
                 if (task.CompletedAt.HasValue)
                 {
@@ -489,7 +491,7 @@ namespace FloatingTodo
                 FrameworkElement plus = UiKit.Icon("M8,3.2 L8,12.8 M3.2,8 L12.8,8", 8.5, "#FF827B8E", 1.2);
                 plus.Margin = new Thickness(0, 0, 4, 0);
                 meta.Children.Add(plus);
-                meta.Children.Add(UiKit.Text("添加时间", 9, "#FF8B8498"));
+                meta.Children.Add(UiKit.Text(LanguageManager.T("添加时间"), 9, "#FF8B8498"));
                 hit.Cursor = Cursors.Hand;
                 hit.Opacity = 0.7;
                 hit.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e)
@@ -501,7 +503,7 @@ namespace FloatingTodo
                 return hit;
             }
 
-            DuePresentation due = TaskService.DescribeDue(task, DateTime.Now, _state.Settings.LeadMinutes);
+            DuePresentation due = TaskService.DescribeDue(task, DateTime.Now, _state.Settings.LeadMinutes, LanguageManager.Current);
             if (due.Urgent)
             {
                 Ellipse dot = new Ellipse();
@@ -698,7 +700,7 @@ namespace FloatingTodo
             _selectedTaskIds.Clear();
             _normalFooter.Visibility = Visibility.Collapsed;
             _batchBar.Visibility = Visibility.Visible;
-            _selectModeText.Text = "取消";
+            _selectModeText.Text = LanguageManager.T("取消");
             RebuildAll(true);
         }
 
@@ -708,7 +710,7 @@ namespace FloatingTodo
             _selectedTaskIds.Clear();
             _normalFooter.Visibility = Visibility.Visible;
             _batchBar.Visibility = Visibility.Collapsed;
-            _selectModeText.Text = "选择";
+            _selectModeText.Text = LanguageManager.T("选择");
             RebuildAll(true);
         }
 
@@ -745,9 +747,9 @@ namespace FloatingTodo
             if (_selectionCountText == null) return;
             int count = _selectedTaskIds.Count;
             int total = _state.Tasks.Count;
-            _selectionCountText.Text = "已选 " + count.ToString() + " 项";
+            _selectionCountText.Text = LanguageManager.Format("已选 {0} 项", count);
             _selectModeButton.Visibility = total > 0 ? Visibility.Visible : Visibility.Collapsed;
-            _selectAllText.Text = AllSelectableSelected() ? "清空" : "全选";
+            _selectAllText.Text = LanguageManager.T(AllSelectableSelected() ? "清空" : "全选");
             List<TodoTask> selected = GetSelectedTasks();
             bool anyActive = false;
             bool allDone = selected.Count > 0;
@@ -757,7 +759,7 @@ namespace FloatingTodo
             }
             if (selected.Count == 0) allDone = false;
             TextBlock doneLabel = _batchDoneButton.Content as TextBlock;
-            if (doneLabel != null) doneLabel.Text = allDone ? "恢复" : "完成";
+            if (doneLabel != null) doneLabel.Text = LanguageManager.T(allDone ? "恢复" : "完成");
             bool hasSelection = count > 0;
             SetActionEnabled(_batchDoneButton, hasSelection);
             SetActionEnabled(_batchDueButton, anyActive);
@@ -807,9 +809,22 @@ namespace FloatingTodo
             bool anyActive = false;
             for (int i = 0; i < selected.Count; i++) if (!selected[i].Done) { anyActive = true; break; }
             bool makeDone = anyActive;
-            string verb = makeDone ? "完成" : "恢复";
-            string title = "确定" + verb + "选中的 " + selected.Count.ToString() + " 项？";
-            string body = makeDone ? "选中的待办会移到已完成列表。" : "选中的待办会恢复到待办列表。";
+            string verb = LanguageManager.T(makeDone ? "完成" : "恢复");
+            string title;
+            string body;
+            if (LanguageManager.IsEnglish)
+            {
+                title = (makeDone ? "Complete " : "Restore ") + selected.Count.ToString() +
+                    " selected " + (selected.Count == 1 ? "task" : "tasks") + "?";
+                body = makeDone
+                    ? "The selected tasks will move to Completed."
+                    : "The selected tasks will return to To-do.";
+            }
+            else
+            {
+                title = "确定" + verb + "选中的 " + selected.Count.ToString() + " 项？";
+                body = makeDone ? "选中的待办会移到已完成列表。" : "选中的待办会恢复到待办列表。";
+            }
             ShowConfirmModal(title, body, verb, delegate
             {
                 TaskService.MarkAll(selected, makeDone, DateTime.Now);
@@ -818,7 +833,7 @@ namespace FloatingTodo
                 _selectionMode = false;
                 _normalFooter.Visibility = Visibility.Visible;
                 _batchBar.Visibility = Visibility.Collapsed;
-                _selectModeText.Text = "选择";
+                _selectModeText.Text = LanguageManager.T("选择");
                 RebuildAll(true);
                 UpdateTrayState();
             });
@@ -828,8 +843,12 @@ namespace FloatingTodo
         {
             List<TodoTask> selected = GetSelectedTasks();
             if (selected.Count == 0) return;
-            ShowConfirmModal("删除选中的 " + selected.Count.ToString() + " 项？",
-                "这些待办将被永久删除，此操作无法撤销。", "删除", delegate
+            string deleteTitle = LanguageManager.IsEnglish
+                ? "Delete " + selected.Count.ToString() + " selected " +
+                  (selected.Count == 1 ? "task" : "tasks") + "?"
+                : "删除选中的 " + selected.Count.ToString() + " 项？";
+            ShowConfirmModal(deleteTitle,
+                LanguageManager.T("这些待办将被永久删除，此操作无法撤销。"), LanguageManager.T("删除"), delegate
                 {
                     List<string> ids = new List<string>();
                     for (int i = 0; i < selected.Count; i++) ids.Add(selected[i].Id);
@@ -839,7 +858,7 @@ namespace FloatingTodo
                     _selectionMode = false;
                     _normalFooter.Visibility = Visibility.Visible;
                     _batchBar.Visibility = Visibility.Collapsed;
-                    _selectModeText.Text = "选择";
+                    _selectModeText.Text = LanguageManager.T("选择");
                     RebuildAll(true);
                     UpdateTrayState();
                 });
@@ -848,7 +867,7 @@ namespace FloatingTodo
         private void ConfirmDeleteTask(TodoTask task)
         {
             if (task == null) return;
-            ShowConfirmModal("删除这条待办？", "删除后无法恢复。", "删除", delegate
+            ShowConfirmModal(LanguageManager.T("删除这条待办？"), LanguageManager.T("删除后无法恢复。"), LanguageManager.T("删除"), delegate
             {
                 List<string> ids = new List<string>();
                 ids.Add(task.Id);
@@ -864,8 +883,11 @@ namespace FloatingTodo
             int count = 0;
             for (int i = 0; i < _state.Tasks.Count; i++) if (_state.Tasks[i].Done) count++;
             if (count == 0) return;
-            ShowConfirmModal("清除 " + count.ToString() + " 项已完成待办？",
-                "这些待办将被永久删除，此操作无法撤销。", "清除", delegate
+            string clearTitle = LanguageManager.IsEnglish
+                ? "Clear " + count.ToString() + " completed " + (count == 1 ? "task" : "tasks") + "?"
+                : "清除 " + count.ToString() + " 项已完成待办？";
+            ShowConfirmModal(clearTitle,
+                LanguageManager.T("这些待办将被永久删除，此操作无法撤销。"), LanguageManager.T("清除"), delegate
                 {
                     TaskService.ClearCompleted(_state);
                     _store.SaveAsync();

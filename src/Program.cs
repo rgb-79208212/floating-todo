@@ -41,6 +41,7 @@ namespace FloatingTodo
                 for (int i = 0; i < repeats; i++)
                 {
                     IntPtr target = Native.FindWindow(null, "浮光待办");
+                    if (target == IntPtr.Zero) target = Native.FindWindow(null, "FloatingTodo");
                     if (target != IntPtr.Zero)
                     {
                         Native.PostMessage(target, message, wantsQuit ? (IntPtr)2 : (IntPtr)1, IntPtr.Zero);
@@ -65,6 +66,7 @@ namespace FloatingTodo
             string dataDirectory = StateStore.DefaultDataDirectory();
             StateStore store = new StateStore(dataDirectory);
             store.Load();
+            LanguageManager.Initialize(store.State.Settings.Language);
             if (options.DevMode) store.Log("[debug] Program main, data=" + dataDirectory, null);
             if (options.SeedDemo)
             {
@@ -97,8 +99,8 @@ namespace FloatingTodo
             catch (Exception ex)
             {
                 store.Log("创建窗口失败。", ex);
-                MessageBox.Show("浮光待办无法启动，错误已记录到：\n" + store.DataDirectory + "\n\n" + ex.Message,
-                    "浮光待办", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(LanguageManager.T("浮光待办无法启动，错误已记录到：") + "\n" + store.DataDirectory + "\n\n" + ex.Message,
+                    LanguageManager.T("浮光待办"), MessageBoxButton.OK, MessageBoxImage.Error);
                 return 1;
             }
 
@@ -109,8 +111,8 @@ namespace FloatingTodo
             catch (Exception ex)
             {
                 store.Log("应用运行失败。", ex);
-                MessageBox.Show("浮光待办遇到问题，错误已记录到：\n" + store.DataDirectory + "\n\n" + ex.Message,
-                    "浮光待办", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(LanguageManager.T("浮光待办遇到问题，错误已记录到：") + "\n" + store.DataDirectory + "\n\n" + ex.Message,
+                    LanguageManager.T("浮光待办"), MessageBoxButton.OK, MessageBoxImage.Error);
                 return 1;
             }
             finally

@@ -31,3 +31,7 @@ debug.log
 # OS
 Thumbs.db
 Desktop.ini
+/localization-*.txt
+/remaining-ui.txt
+/missing-localization.txt
+/en*.png

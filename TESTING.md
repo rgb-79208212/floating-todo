@@ -1,6 +1,29 @@
-# v1.3.1 / v1.3 测试记录
+# v1.4.0 / v1.3.1 / v1.3 测试记录
 
 测试环境：Windows 11 / 150% DPI / 单显示器。所有 UI 测试使用独立 `FLOATING_TODO_DATA_DIR`，未读写真实待办内容。
+
+## v1.4.0 英文界面
+
+当前结果：**核心 42/42，UI 冒烟 12/12，英文切换/布局检查通过**。
+
+- 中文 → English → 中文双向切换；语言写入 `AppSettings.Language`。
+- 首次运行默认跟随 Windows 显示语言；切换后重启保持。
+- 英文主界面：日期 `WED`、概览 `6 open · 3 due soon · 2 completed`、任务时间条 `Today 19:02 · Overdue 2h 35m` / `38 min left`、进度 `2 / 8 done`。
+- 340×500 紧凑窗口检查：标题栏、输入框、任务行、底部进度均未溢出。
+- 英文 More 菜单：Pin to desktop / Always on top / Launch at login / Mark due before / Window size / Language；在紧凑窗口内完整显示。
+- 英文截止日历：`Due time`、`Nov 2026`、周标题 `M T W T F S S`、`Cancel` / `Done`。
+- 英文编辑器：Title / Note / Tags / Add / Due / Cancel / Save。
+- 英文批量栏：Selected 0 / Select all / Complete / Due / Delete；在 340 宽窗口内未互相挤压。
+- 英文任务菜单：Edit / Change due time / Clear due time / Mark complete / Delete task…。
+- 任务标题、备注、标签保持用户原文，不翻译。
+- 翻译来源统一在 `LanguageManager`；XAML 静态标签与 C# 动态文案共用字典。
+
+已知未本地化：
+- Windows 开始菜单快捷方式名称仍为「浮光待办」。
+- 日志、部分启动/开机启动错误、系统级文案仍为中文。
+- 尚未迁移到 `.resx`；后续多语言需要逐语言布局回归。
+
+英文界面截图：`docs/theme-light-en.png`。
 
 ## v1.3.1 图标
 

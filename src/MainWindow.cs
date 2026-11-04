@@ -196,8 +196,9 @@ namespace FloatingTodo
             _showMessage = showMessage;
             _quitMessage = quitMessage;
             ThemeManager.Initialize(_state.Settings.Theme);
+            LanguageManager.Initialize(_state.Settings.Language);
 
-            Title = "浮光待办";
+            Title = LanguageManager.IsEnglish ? "FloatingTodo" : "浮光待办";
             WindowStyle = WindowStyle.None;
             ResizeMode = ResizeMode.NoResize;
             AllowsTransparency = true;
@@ -246,6 +247,7 @@ namespace FloatingTodo
         private void LoadInterface()
         {
             string xaml = ThemeManager.TransformXaml(ReadTextResource("FloatingTodo.UI.xaml"));
+            xaml = LanguageManager.TransformXaml(xaml);
             _root = (Grid)XamlReader.Parse(xaml);
             Content = _root;
             _root.Opacity = 0;
@@ -492,6 +494,20 @@ namespace FloatingTodo
 
         private void ReloadInterfaceForTheme()
         {
+            ReloadInterface(false);
+        }
+
+        private void SetLanguage(AppLanguage language)
+        {
+            if (LanguageManager.Current == language) return;
+            _state.Settings.Language = language == AppLanguage.English ? "en" : "zh";
+            _store.SaveAsync();
+            LanguageManager.SetLanguage(language);
+            ReloadInterface(true);
+        }
+
+        private void ReloadInterface(bool rebuildTray)
+        {
             CloseTransientPopups();
             if (_modalOpen) HideModal();
             if (_editorOverlay != null && _editorOverlay.Visibility == Visibility.Visible)
@@ -503,6 +519,7 @@ namespace FloatingTodo
             _selectedTaskIds.Clear();
             _inlineEditing = false;
 
+            Title = LanguageManager.IsEnglish ? "FloatingTodo" : "浮光待办";
             LoadInterface();
             FindParts();
             ApplyThemeSurface();
@@ -513,6 +530,15 @@ namespace FloatingTodo
             UpdatePendingDueUi();
             RebuildAll(true);
             _root.Opacity = 1;
+            if (rebuildTray)
+            {
+                if (_tray != null)
+                {
+                    _tray.Dispose();
+                    _tray = null;
+                }
+                BuildTray();
+            }
             Dispatcher.BeginInvoke(new Action(FocusInput), DispatcherPriority.Input);
         }
 
@@ -565,8 +591,8 @@ namespace FloatingTodo
             _themeToggleIcon.Data = Geometry.Parse(light
                 ? "M8,5.2 A2.8,2.8 0 1 1 7.99,5.2 M8,1.4 L8,3 M8,13 L8,14.6 M1.4,8 L3,8 M13,8 L14.6,8 M3.4,3.4 L4.5,4.5 M11.5,11.5 L12.6,12.6 M12.6,3.4 L11.5,4.5 M4.5,11.5 L3.4,12.6"
                 : "M12.7 9.7 A5.1 5.1 0 0 1 6.3 3.3 A5.15 5.15 0 1 0 12.7 9.7 Z");
-            _themeToggleButton.ToolTip = light ? "切换到深色" : "切换到浅色";
-            AutomationProperties.SetName(_themeToggleButton, light ? "切换到深色" : "切换到浅色");
+            _themeToggleButton.ToolTip = LanguageManager.T(light ? "切换到深色" : "切换到浅色");
+            AutomationProperties.SetName(_themeToggleButton, LanguageManager.T(light ? "切换到深色" : "切换到浅色"));
         }
 
         private void BuildTray()
@@ -738,7 +764,7 @@ namespace FloatingTodo
             if (_tray != null && !_hideTipShown)
             {
                 _hideTipShown = true;
-                _tray.ShowInfo("已收进系统托盘", "浮光待办仍在运行，单击右下角托盘图标即可恢复。");
+                _tray.ShowInfo(LanguageManager.T("已收进系统托盘"), LanguageManager.T("浮光待办仍在运行，单击右下角托盘图标即可恢复。"));
             }
         }
 
@@ -811,7 +837,7 @@ namespace FloatingTodo
             if (_pendingDue.HasValue)
             {
                 _pendingDueRow.Visibility = Visibility.Visible;
-                _pendingDueText.Text = "下一件 · " + TaskService.FormatDue(_pendingDue.Value, DateTime.Now);
+                _pendingDueText.Text = LanguageManager.T("下一件 · ") + TaskService.FormatDue(_pendingDue.Value, DateTime.Now, LanguageManager.Current);
                 _dueButton.Background = new SolidColorBrush(Color.FromArgb(38, 188, 169, 255));
             }
             else
@@ -825,7 +851,7 @@ namespace FloatingTodo
         {
             Topmost = _state.Settings.AlwaysOnTop;
             _headerArea.Cursor = _state.Settings.DesktopPinned ? Cursors.Arrow : Cursors.SizeAll;
-            _headerArea.ToolTip = _state.Settings.DesktopPinned ? "位置已锁定，可在设置中解除" : null;
+            _headerArea.ToolTip = _state.Settings.DesktopPinned ? LanguageManager.T("位置已锁定，可在设置中解除") : null;
             if (_tray != null) _tray.SetUrgent(HasUrgentTasks());
         }
 
@@ -891,11 +917,12 @@ namespace FloatingTodo
             if (_dateText != null) _dateText.Text = now.ToString("MM.dd", CultureInfo.InvariantCulture);
             if (_weekdayText != null)
             {
-                string[] days = new string[] { "周日", "周一", "周二", "周三", "周四", "周五", "周六" };
-                string en = now.ToString("ddd", CultureInfo.InvariantCulture).ToUpperInvariant();
-                _weekdayText.Text = days[(int)now.DayOfWeek] + " / " + en;
+                string en = TaskService.WeekdayShort(now.DayOfWeek).ToUpperInvariant();
+                _weekdayText.Text = LanguageManager.IsEnglish
+                    ? en
+                    : new string[] { "周日", "周一", "周二", "周三", "周四", "周五", "周六" }[(int)now.DayOfWeek] + " / " + en;
             }
-            if (_summaryText != null) _summaryText.Text = TaskService.Summary(_state, now);
+            if (_summaryText != null) _summaryText.Text = TaskService.Summary(_state, now, LanguageManager.Current);
 
             int active = 0;
             int done = 0;
@@ -905,7 +932,8 @@ namespace FloatingTodo
             }
             if (_activeCountText != null) _activeCountText.Text = active.ToString();
             int total = active + done;
-            if (_progressText != null) _progressText.Text = done.ToString() + " / " + total.ToString() + " 完成";
+            if (_progressText != null) _progressText.Text = done.ToString() + " / " + total.ToString() +
+                LanguageManager.T(" 完成");
             if (_progressFill != null)
             {
                 double ratio = total > 0 ? (double)done / total : 0;
@@ -928,8 +956,8 @@ namespace FloatingTodo
                 if (TaskService.IsUrgent(t, now, _state.Settings.LeadMinutes)) urgent++;
             }
             _tray.SetUrgent(urgent > 0);
-            string tip = "浮光待办 · " + active.ToString() + " 项待办";
-            if (urgent > 0) tip += " · " + urgent.ToString() + " 项临近";
+            string tip = LanguageManager.T("浮光待办 · ") + active.ToString() + LanguageManager.T(" 项待办");
+            if (urgent > 0) tip += " · " + urgent.ToString() + LanguageManager.T(" 项临近");
             _tray.SetTooltip(tip);
         }
 
@@ -952,8 +980,8 @@ namespace FloatingTodo
             }
             if (fresh.Count == 0) return;
             for (int i = 0; i < fresh.Count; i++) _balloonedUrgent.Add(fresh[i]);
-            if (fresh.Count == 1) _tray.ShowInfo("待办临期", firstName);
-            else _tray.ShowInfo("待办临期", fresh.Count.ToString() + " 项待办即将截止。");
+            if (fresh.Count == 1) _tray.ShowInfo(LanguageManager.T("待办临期"), firstName);
+            else _tray.ShowInfo(LanguageManager.T("待办临期"), fresh.Count.ToString() + LanguageManager.T("项待办即将截止。"));
         }
 
         private void OnWindowPreviewKeyDown(object sender, KeyEventArgs e)

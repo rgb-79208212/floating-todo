@@ -75,6 +75,17 @@ internal static class CoreTests
         Check(TaskService.FormatDue(new DateTime(2027, 1, 2, 9, 30, 0), now) == "2027/1/2 09:30", "跨年时间格式");
         Check(TaskService.IsUrgent(Task("边界", now.AddMinutes(60), false, now), now, 60), "提醒边界包含等号");
 
+        DuePresentation englishSoon = TaskService.DescribeDue(soon, now, 60, AppLanguage.English);
+        Check(englishSoon.Primary == "Today 14:20" && englishSoon.Secondary == "20 min left", "英文截止文案");
+        DuePresentation englishOverdue = TaskService.DescribeDue(overdue, now, 60, AppLanguage.English);
+        Check(englishOverdue.Primary == "Today 12:00" && englishOverdue.Secondary.StartsWith("Overdue "), "英文逾期文案");
+        Check(TaskService.LeadLabel(60, AppLanguage.English) == "1 hour", "英文提醒提前量");
+        AppState englishSummary = new AppState();
+        englishSummary.Settings.LeadMinutes = 60;
+        englishSummary.Tasks.Add(Task("Soon", now.AddMinutes(15), false, now));
+        string summaryEn = TaskService.Summary(englishSummary, now, AppLanguage.English);
+        Check(summaryEn.Contains("1 open") && summaryEn.Contains("1 due soon"), "英文概览");
+
         // Batch operations
         AppState batch = new AppState();
         TodoTask a = Task("A", null, false, now);
@@ -107,6 +118,7 @@ internal static class CoreTests
         Check(!legacy.Settings.DesktopPinned, "旧数据默认不锁定桌面位置");
         Check(legacy.Settings.AutoStart, "开机自启默认开启");
         Check(legacy.Settings.Theme == "light", "旧数据默认浅色外观");
+        Check(legacy.Settings.Language == "zh" || legacy.Settings.Language == "en", "旧数据自动选择界面语言");
 
         AppState themed = new AppState();
         themed.Settings.Theme = "dark";
@@ -118,6 +130,16 @@ internal static class CoreTests
         badTheme.Normalize();
         Check(badTheme.Settings.Theme == "light", "未知外观回退浅色");
 
+        AppState englishSettings = new AppState();
+        englishSettings.Settings.Language = "en";
+        englishSettings.Normalize();
+        Check(englishSettings.Settings.Language == "en", "英文界面设置保留");
+
+        AppState badLanguage = new AppState();
+        badLanguage.Settings.Language = "fr";
+        badLanguage.Normalize();
+        Check(badLanguage.Settings.Language == "zh", "未知界面语言回退中文");
+
         // Async storage roundtrip
         string temp = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "test-data-" + Guid.NewGuid().ToString("N"));
         try
@@ -127,6 +149,7 @@ internal static class CoreTests
             store.State.Settings.AlwaysOnTop = false;
             store.State.Settings.DesktopPinned = true;
             store.State.Settings.Theme = "dark";
+            store.State.Settings.Language = "en";
             store.State.Tasks.Add(Task("持久化测试", now.AddHours(1), false, now));
             store.SaveAsync();
             System.Threading.Thread.Sleep(350);
@@ -135,6 +158,7 @@ internal static class CoreTests
             Check(loaded.State.Tasks.Count == 1 && loaded.State.Tasks[0].Title == "持久化测试", "异步保存后可以重新读取");
             Check(loaded.State.Settings.DesktopPinned && !loaded.State.Settings.AlwaysOnTop, "设置持久化");
             Check(loaded.State.Settings.Theme == "dark", "外观设置持久化");
+            Check(loaded.State.Settings.Language == "en", "界面语言持久化");
             loaded.State.Tasks.Add(Task("同步保存", null, false, now));
             loaded.SaveNow();
             StateStore loaded2 = new StateStore(temp);

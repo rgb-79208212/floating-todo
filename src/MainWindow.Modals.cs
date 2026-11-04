@@ -15,9 +15,9 @@ namespace FloatingTodo
         private void ShowQuitModal()
         {
             if (_modalOpen) return;
-            ShowModalCore("退出浮光待办？",
-                "退出后小组件会关闭。只要仍开启「开机自动显示」，下次登录仍会出现。",
-                "退出", true, delegate
+            ShowModalCore(LanguageManager.T("退出浮光待办？"),
+                LanguageManager.T("退出后小组件会关闭。只要仍开启「开机自动显示」，下次登录仍会出现。"),
+                LanguageManager.T("退出"), true, delegate
                 {
                     bool alsoDisable = _modalCheck.IsChecked == true;
                     if (alsoDisable) SetAutoStart(false);

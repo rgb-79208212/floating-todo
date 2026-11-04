@@ -1,9 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Runtime.Serialization;
 
 namespace FloatingTodo
 {
+    public enum AppLanguage
+    {
+        Chinese,
+        English
+    }
+
     [DataContract]
     public class TodoTask
     {
@@ -53,6 +60,7 @@ namespace FloatingTodo
         [DataMember(Order = 4)] public bool CompletedExpanded = false;
         [DataMember(Order = 5)] public bool DesktopPinned = false;
         [DataMember(Order = 6)] public string Theme = "light";
+        [DataMember(Order = 7)] public string Language = "";
     }
 
     [DataContract]
@@ -85,6 +93,11 @@ namespace FloatingTodo
             if (!string.Equals(Settings.Theme, "dark", StringComparison.OrdinalIgnoreCase) &&
                 !string.Equals(Settings.Theme, "light", StringComparison.OrdinalIgnoreCase))
                 Settings.Theme = "light";
+            if (string.IsNullOrEmpty(Settings.Language))
+                Settings.Language = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "zh" ? "zh" : "en";
+            if (!string.Equals(Settings.Language, "zh", StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(Settings.Language, "en", StringComparison.OrdinalIgnoreCase))
+                Settings.Language = "zh";
             if (double.IsNaN(WindowLeft) || double.IsInfinity(WindowLeft)) WindowLeft = 0;
             if (double.IsNaN(WindowTop) || double.IsInfinity(WindowTop)) WindowTop = 0;
             if (double.IsNaN(WindowWidth) || double.IsInfinity(WindowWidth) || WindowWidth < 330) WindowWidth = 372;

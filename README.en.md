@@ -4,7 +4,16 @@ English | [简体中文](README.md)
 
 > A native Windows desktop todo widget built with C# + .NET Framework 4.8 + WPF. Single-file EXE, local-first.
 >
-> **Baseline: v1.3.1.** This is a stable, buildable, testable desktop-client baseline. The AI task assistant is planned, not implemented.
+> **v1.4.0.** Chinese / English UI. The AI task assistant is planned, not implemented.
+
+## v1.4.0: English UI
+
+- Open **⋯ → Language** and choose **中文 / English**. The choice is saved and survives restart.
+- First launch follows the Windows display language; after that, the in-app choice wins.
+- English covers the date/weekday, relative times, task time chips, summary, menus, due picker, editor, batch actions, confirmations, and tray text.
+- Task titles, notes, and tags are user content and are never translated.
+- English labels are longer; the layout has been checked at the compact **340×500** window size.
+- Theme and language are independent; changing either does not modify task data.
 
 ![Windows](https://img.shields.io/badge/Windows-10%2F11-2B2B2B?style=flat-square)
 ![.NET Framework](https://img.shields.io/badge/.NET%20Framework-4.8-512BD4?style=flat-square)
@@ -13,6 +22,7 @@ English | [简体中文](README.md)
 
 ![Light M](docs/theme-light.png)
 ![Dark AA](docs/theme-dark.png)
+![English light](docs/theme-light-en.png)
 
 > Screenshots use demo data, not a real user's tasks.
 
@@ -22,7 +32,7 @@ FloatingTodo is a lightweight todo widget that stays on the Windows desktop: ope
 
 It is **not** a web app, a mini program, or a data-science/ML project. It solves one narrow problem: **capturing and finishing tasks on Windows with as little interruption as possible**.
 
-The current UI is Simplified Chinese only. See [English users and i18n](#english-users-and-i18n) for the exact status.
+The UI is available in **Simplified Chinese and English**. See [English users and i18n](#english-users-and-i18n) for details and remaining gaps.
 
 ## Features
 
@@ -35,6 +45,7 @@ The current UI is Simplified Chinese only. See [English users and i18n](#english
 - **Two themes**: light M (ivory/copper) and dark AA (dark wine/bone), switched instantly from the title bar and persisted.
 - **Desktop behavior**: borderless rounded card, drag-resize from the bottom-right, remembered position/size, always-on-top, and desktop-position lock.
 - **Tray and quit**: minimize to the notification area; the close button saves and quits; optional launch at login.
+- **Language switch**: Chinese / English from **⋯ → Language**; first launch follows Windows, then remembers the user's choice.
 - **Accessibility hooks**: key controls expose AutomationProperties names and can be driven by UI Automation.
 
 ## Tech stack
@@ -73,6 +84,7 @@ src/
   TaskService.cs           Sorting, due labels, batch operations, urgency (no UI)
   Storage.cs               Async atomic persistence, launch-at-login
   Theme.cs                 Theme modes, palettes, color mapping, XAML theming
+  Localization.cs          Chinese/English strings, date formats, XAML language pass
   MainWindow.cs            Window shell, title bar, theme switch, lifecycle
   MainWindow.Tasks.cs      Task list, tag filter, batch mode, drag scrolling
   MainWindow.DuePicker.cs  Calendar / month-year / compact time picker
@@ -126,7 +138,7 @@ Build the install package:
 powershell -NoProfile -ExecutionPolicy Bypass -File .\package.ps1
 ```
 
-Output: `release\浮光待办-v1.3.1.zip` (not committed).
+Output: `release\浮光待办-v1.4.0.zip` (not committed).
 
 ## Tests
 
@@ -175,22 +187,23 @@ The icon set covers 16/20/24/32/40/48/64/128/256. 16/20 px use an optical simpli
 
 ## English users and i18n
 
-**Status: English documentation only; the application UI is not localized yet.**
+**Status: English UI supported.**
 
-- The app UI is currently **Simplified Chinese only**. This README is the English documentation entry point; the app itself will still show Chinese labels.
-- UI strings are currently spread across `ui.xaml` and C# code. There is no `.resx` resource layer and no language switcher.
-- Date/time labels such as "today", "tomorrow", and the weekday line are generated in Chinese. An English UI needs culture-aware formatting, not just string replacement.
-- Task titles and tags are Unicode and stored language-neutrally in JSON.
-- English labels are usually longer than Chinese ones. The compact window (down to 330×460) has not been tested with English text; wrapping, truncation, and layout need a dedicated pass.
-- The app relies on Windows fonts (Microsoft YaHei UI and SimSun for the date); an English build should verify font fallback.
-- Planned i18n steps: extract strings → culture-aware date/time → English layout tests → font fallback → language setting with persistence.
+- Choose **⋯ → Language → English** (or 中文). The setting is stored in `AppSettings.Language` and persists across restarts.
+- First launch follows the Windows display language. A user who later switches language keeps that choice.
+- Localized surfaces: date/weekday, relative times (Today / Tomorrow / Overdue / left), task time chips, summary, settings and task menus, due picker, editor, batch actions, confirmation dialogs, and tray text.
+- Task titles, notes, and tags are Unicode and are never translated.
+- English strings and static XAML labels live in the `LanguageManager` dictionary; dynamic C# strings and XAML use the same translations. The theme layer stays independent.
+- English labels are longer. The main window, More menu, due picker, editor, task menu, and batch bar were checked at **340×500**.
+- Remaining gaps: the Windows Start-menu shortcut name, some logs/startup error details, and a few OS-level strings remain Chinese. The codebase does not use `.resx` yet.
+- Planned i18n work: move strings to `.resx`, add more languages, culture-specific date formats, font fallback, and per-language screenshot regression.
 
-English users can build and run the baseline today, but should expect a Chinese interface.
+English users can build and use the app with an English UI today.
 
 ## Known limitations
 
 - Windows only; requires .NET Framework 4.8.
-- UI is Simplified Chinese only; English docs are available, English UI is not.
+- Chinese / English UI is available; the Start-menu shortcut name and some logs/startup details remain Chinese.
 - Single instance and local storage; no cloud sync, collaboration, or mobile client.
 - No AI features, backend, database, or account system yet.
 - The tray menu still uses an older dark style and is not connected to the M/AA theme.
@@ -211,12 +224,13 @@ AI work will arrive as separate PRs; the baseline does not pretend it is already
 
 ## Status
 
-- Version: `1.3.1`
+- Version: `1.4.0`
 - Build: passing
-- Core tests: 34/34
-- UI smoke: 12/12
+- Core tests: 42/42
+- UI smoke: 12/12 + English switch/layout checks
 - Icon: double-ring light, multi-size ICO, no outer stroke
 - Documentation: Simplified Chinese + English
+- Language: Chinese / English, Windows-following first launch, then remembered
 
 ---
 

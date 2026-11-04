@@ -35,7 +35,7 @@ namespace FloatingTodo
 
             _notifyIcon = new NotifyIcon();
             _notifyIcon.Icon = _currentIcon;
-            _notifyIcon.Text = "浮光待办";
+            _notifyIcon.Text = LanguageManager.T("浮光待办");
             _notifyIcon.Visible = true;
             _notifyIcon.ContextMenuStrip = _menu;
             _notifyIcon.MouseClick += OnTrayMouseClick;
@@ -57,20 +57,20 @@ namespace FloatingTodo
             _menu.Renderer = new ToolStripProfessionalRenderer(new DarkMenuColorTable());
             _menu.Padding = new Padding(3, 5, 3, 5);
 
-            _showItem = new ToolStripMenuItem("显示浮光待办");
+            _showItem = new ToolStripMenuItem(LanguageManager.T("显示浮光待办"));
             _showItem.Font = new Font("Microsoft YaHei UI", 9.2f, FontStyle.Bold);
             _showItem.Padding = new Padding(0, 5, 0, 5);
             _showItem.Click += delegate { Fire(ShowRequested); };
             _menu.Items.Add(_showItem);
 
-            _hideItem = new ToolStripMenuItem("收进任务栏");
+            _hideItem = new ToolStripMenuItem(LanguageManager.T("收进任务栏"));
             _hideItem.Padding = new Padding(0, 4, 0, 4);
             _hideItem.Click += delegate { Fire(HideRequested); };
             _menu.Items.Add(_hideItem);
 
             _menu.Items.Add(new ToolStripSeparator());
 
-            _quitItem = new ToolStripMenuItem("退出浮光待办…");
+            _quitItem = new ToolStripMenuItem(LanguageManager.T("退出浮光待办…"));
             _quitItem.ForeColor = Color.FromArgb(255, 154, 162);
             _quitItem.Padding = new Padding(0, 4, 0, 4);
             _quitItem.Click += delegate { Fire(QuitRequested); };
@@ -105,7 +105,7 @@ namespace FloatingTodo
         public void SetTooltip(string text)
         {
             if (_disposed || _notifyIcon == null) return;
-            if (text == null) text = "浮光待办";
+            if (text == null) text = LanguageManager.T("浮光待办");
             if (text.Length > 63) text = text.Substring(0, 61) + "…";
             try { _notifyIcon.Text = text; } catch { }
         }

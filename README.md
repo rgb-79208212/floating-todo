@@ -4,7 +4,7 @@
 
 > 原生 Windows 桌面待办小组件。C# + .NET Framework 4.8 + WPF，单文件 EXE，本地数据。
 >
-> **Baseline：v1.3.1**。这是一个稳定、可构建、可测试的桌面客户端基线；AI 任务助手尚未实现，规划见文末。
+> **v1.4.0**。新增中文 / English 界面；AI 任务助手尚未实现，规划见文末。
 
 ![Windows](https://img.shields.io/badge/Windows-10%2F11-2B2B2B?style=flat-square)
 ![.NET Framework](https://img.shields.io/badge/.NET%20Framework-4.8-512BD4?style=flat-square)
@@ -13,8 +13,18 @@
 
 ![浅色 M](docs/theme-light.png)
 ![深色 AA](docs/theme-dark.png)
+![English light](docs/theme-light-en.png)
 
 > 截图使用演示数据，不包含真实用户待办。
+
+## v1.4.0：英文界面
+
+- 右上角「⋯」→「Language」可切换 **中文 / English**，选择写入本地设置并重启保持。
+- 首次运行默认跟随 Windows 显示语言；之后以用户选择为准。
+- 英文界面覆盖日期、星期、相对时间、任务时间条、概览、菜单、截止日历、编辑器、批量操作、确认框和托盘。
+- 任务标题、备注、标签属于用户内容，不会被翻译。
+- 英文文案更长，已在 **340×500** 紧凑窗口下检查标题栏、概览、任务行、批量栏和编辑器布局。
+- 主题与语言相互独立；切换任一设置都不会修改任务数据。
 
 ## 项目定位
 
@@ -71,6 +81,7 @@ src/
   TaskService.cs           排序、时间文案、批量操作、紧急度（不依赖 UI）
   Storage.cs               异步原子持久化、开机启动
   Theme.cs                 主题模式、色板、颜色适配、XAML 主题化
+  Localization.cs          中文/English 文案、日期格式、XAML 语言转换
   MainWindow.cs            窗口壳、标题栏、主题切换、生命周期
   MainWindow.Tasks.cs      任务列表、标签筛选、批量、拖动滚动
   MainWindow.DuePicker.cs  日历 / 年月 / 紧凑时间下拉
@@ -123,7 +134,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\build.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File .\package.ps1
 ```
 
-产物：`release\浮光待办-v1.3.1.zip`（不提交到仓库）。
+产物：`release\浮光待办-v1.4.0.zip`（不提交到仓库）。
 
 ## 测试
 
@@ -155,12 +166,14 @@ $csc = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe"
 
 ## 英文用户与本地化
 
-- 当前应用界面仅提供**简体中文**；英文文档见 [README.en.md](README.en.md)。
-- 英文用户可以正常构建、运行和查看英文文档，但界面文案、日期/时间描述（如“今天”“明天”“周三 / WED”）仍是中文。
-- 界面字符串目前分散在 `ui.xaml` 和 C# 代码中，尚未抽取为 `.resx` 资源，也没有语言切换入口。
-- 任务标题和标签支持 Unicode；`data.json` 本身与语言无关。
-- 英文文案通常更长，紧凑窗口（最小 330×460）需要重新做换行、截断和布局测试；当前没有做英文 UI 验收。
-- 后续国际化步骤：抽取字符串资源 → 文化相关的日期/时间格式 → 英文布局测试 → 字体回退 → 语言设置与持久化。
+- **英文界面已支持**：右上角「⋯」→「Language」→「English」。英文文档见 [README.en.md](README.en.md)。
+- 首次运行默认跟随 Windows 显示语言；之后使用用户在应用内选择的语言，写入 `AppSettings.Language` 并重启保持。
+- 日期、星期、相对时间（Today/Tomorrow/Overdue/left）、菜单、截止日历、编辑器、批量操作和托盘文案已本地化。
+- 任务标题、备注和标签支持 Unicode，并且不会被自动翻译。
+- 字符串统一集中在 `LanguageManager` 的字典中，XAML 静态标签与 C# 动态文案共用同一套翻译；主题仍独立处理。
+- 英文文案更长，已按 340×500 紧凑窗口做布局检查；更长的语言仍需要逐语言回归。
+- 尚未本地化：Windows 开始菜单快捷方式名称、部分日志/启动错误、系统托盘右键菜单的旧深色样式文本以外内容。
+- 后续国际化方向：把字典迁移到 `.resx`、文化相关日期格式、更多语言、字体回退和逐语言截图回归。
 
 ## 数据与隐私
 
@@ -182,7 +195,7 @@ $csc = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe"
 ## 已知限制
 
 - 仅 Windows；依赖 .NET Framework 4.8。
-- 界面仅简体中文；英文文档可用，但英文 UI 尚未实现。
+- 中文 / English UI 可用；开始菜单快捷方式名称和部分日志/启动错误仍为中文。
 - 单实例、本地存储；没有云同步、协作、移动端。
 - 目前没有 AI 功能；没有服务端、数据库、账号体系。
 - 托盘菜单沿用较早的深色样式，尚未接入 M/AA 主题。
@@ -203,12 +216,13 @@ AI 功能会作为后续独立 PR 加入，不在 baseline 中伪装成已完成
 
 ## 状态
 
-- 版本：`1.3.1`
+- 版本：`1.4.0`
 - 构建：通过
-- 核心测试：34/34
-- UI 冒烟：12/12
+- 核心测试：42/42
+- UI 冒烟：12/12 + 英文界面切换/布局检查
 - 图标：双环浅色，多尺寸 ICO，无外描边
 - 文档：简体中文 + English
+- 语言：中文 / English，首次跟随 Windows，之后记忆
 
 ---
 

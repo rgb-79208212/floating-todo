@@ -28,13 +28,13 @@ namespace FloatingTodo
         {
             _moreMenuPanel.Children.Clear();
             _moreMenuPanel.Children.Add(CreateSwitchRow(
-                "钉在桌面", "锁定位置，防止误拖动", _state.Settings.DesktopPinned,
+                LanguageManager.T("钉在桌面"), LanguageManager.T("锁定位置，防止误拖动"), _state.Settings.DesktopPinned,
                 delegate { SetDesktopPinned(!_state.Settings.DesktopPinned); BuildMoreMenu(); }));
             _moreMenuPanel.Children.Add(CreateSwitchRow(
-                "固定最上层", "始终显示在其他窗口之上", _state.Settings.AlwaysOnTop,
+                LanguageManager.T("固定最上层"), LanguageManager.T("始终显示在其他窗口之上"), _state.Settings.AlwaysOnTop,
                 delegate { SetAlwaysOnTop(!_state.Settings.AlwaysOnTop); BuildMoreMenu(); }));
             _moreMenuPanel.Children.Add(CreateSwitchRow(
-                "开机自动显示", "登录 Windows 后自动出现", _state.Settings.AutoStart,
+                LanguageManager.T("开机自动显示"), LanguageManager.T("登录 Windows 后自动出现"), _state.Settings.AutoStart,
                 delegate { SetAutoStart(!_state.Settings.AutoStart); BuildMoreMenu(); }));
 
             Border hair = new Border();
@@ -44,8 +44,8 @@ namespace FloatingTodo
             _moreMenuPanel.Children.Add(hair);
 
             Grid leadHead = new Grid();
-            leadHead.Children.Add(UiKit.Text("到期前标红", 9.5, "#FFC7C1D2"));
-            TextBlock leadValue = UiKit.Text(TaskService.LeadLabel(_state.Settings.LeadMinutes), 8.4, "#FF888294");
+            leadHead.Children.Add(UiKit.Text(LanguageManager.T("到期前标红"), 9.5, "#FFC7C1D2"));
+            TextBlock leadValue = UiKit.Text(TaskService.LeadLabel(_state.Settings.LeadMinutes, LanguageManager.Current), 8.4, "#FF888294");
             leadValue.HorizontalAlignment = HorizontalAlignment.Right;
             leadHead.Children.Add(leadValue);
             _moreMenuPanel.Children.Add(leadHead);
@@ -59,7 +59,7 @@ namespace FloatingTodo
                 bool active = _state.Settings.LeadMinutes == value;
                 Button chip = new Button();
                 chip.Style = (Style)_root.Resources["ChipButtonStyle"];
-                TextBlock label = UiKit.Text(TaskService.LeadLabel(value), 8.7, active ? "#FF19141F" : "#FFDCD6E8");
+                TextBlock label = UiKit.Text(TaskService.LeadLabel(value, LanguageManager.Current), 8.7, active ? "#FF19141F" : "#FFDCD6E8");
                 if (active) label.FontWeight = FontWeights.SemiBold;
                 chip.Content = label;
                 chip.Margin = new Thickness(2);
@@ -76,20 +76,30 @@ namespace FloatingTodo
                     RebuildAll(true);
                     BuildMoreMenu();
                 };
-                AutomationProperties.SetName(chip, "到期前 " + TaskService.LeadLabel(value) + " 标红");
+                AutomationProperties.SetName(chip, LanguageManager.Format("到期前 {0} 标红",
+                    TaskService.LeadLabel(value, LanguageManager.Current)));
                 leadChips.Children.Add(chip);
             }
             _moreMenuPanel.Children.Add(leadChips);
 
-            TextBlock sizeLabel = UiKit.Text("窗口大小", 9.2, "#FF9A93A8");
+            TextBlock sizeLabel = UiKit.Text(LanguageManager.T("窗口大小"), 9.2, "#FF9A93A8");
             sizeLabel.Margin = new Thickness(4, 8, 0, 4);
             _moreMenuPanel.Children.Add(sizeLabel);
             WrapPanel sizeChips = new WrapPanel();
             sizeChips.Margin = new Thickness(-2, 0, -2, 2);
-            AddSizeChip(sizeChips, "紧凑", 340, 500);
-            AddSizeChip(sizeChips, "标准", 372, 566);
-            AddSizeChip(sizeChips, "宽屏", 440, 650);
+            AddSizeChip(sizeChips, LanguageManager.T("紧凑"), 340, 500);
+            AddSizeChip(sizeChips, LanguageManager.T("标准"), 372, 566);
+            AddSizeChip(sizeChips, LanguageManager.T("宽屏"), 440, 650);
             _moreMenuPanel.Children.Add(sizeChips);
+
+            TextBlock langLabel = UiKit.Text(LanguageManager.T("语言"), 9.2, "#FF9A93A8");
+            langLabel.Margin = new Thickness(4, 8, 0, 4);
+            _moreMenuPanel.Children.Add(langLabel);
+            WrapPanel langChips = new WrapPanel();
+            langChips.Margin = new Thickness(-2, 0, -2, 2);
+            AddLanguageChip(langChips, "中文", AppLanguage.Chinese);
+            AddLanguageChip(langChips, "English", AppLanguage.English);
+            _moreMenuPanel.Children.Add(langChips);
 
             if (!string.IsNullOrEmpty(_autoStartError))
             {
@@ -113,7 +123,27 @@ namespace FloatingTodo
                 SetWindowSize(width, height);
                 BuildMoreMenu();
             };
-            AutomationProperties.SetName(chip, "窗口大小 " + label);
+            AutomationProperties.SetName(chip, LanguageManager.Format("窗口大小 {0}", label));
+            panel.Children.Add(chip);
+        }
+
+        private void AddLanguageChip(WrapPanel panel, string label, AppLanguage language)
+        {
+            bool active = LanguageManager.Current == language;
+            Button chip = new Button();
+            chip.Style = (Style)_root.Resources["ChipButtonStyle"];
+            TextBlock text = UiKit.Text(label, 8.7, active ? "#FF19141F" : "#FFDCD6E8");
+            if (active) text.FontWeight = FontWeights.SemiBold;
+            chip.Content = text;
+            chip.Margin = new Thickness(2);
+            chip.Padding = new Thickness(7, 4, 7, 4);
+            if (active)
+            {
+                chip.Background = UiKit.Brush("#D9BCA9FF");
+                chip.BorderBrush = UiKit.Brush("#55D4C7FF");
+            }
+            chip.Click += delegate { SetLanguage(language); };
+            AutomationProperties.SetName(chip, LanguageManager.T("语言") + ": " + label);
             panel.Children.Add(chip);
         }
 
@@ -194,7 +224,7 @@ namespace FloatingTodo
             _rowViews.TryGetValue(task.Id, out view);
             Button edit = CreateSmallActionRow(
                 UiKit.Icon("M3,13 L4,9 L10.5,2.5 C11.2,1.8 12.3,1.8 13,2.5 C13.7,3.2 13.7,4.3 13,5 L6.5,11.5 Z M3,13 L6.5,11.5",
-                    13, "#FFD8D2E4", 1.15), "编辑内容", false);
+                    13, "#FFD8D2E4", 1.15), LanguageManager.T("编辑内容"), false);
             edit.Click += delegate
             {
                 _taskMenuPopup.IsOpen = false;
@@ -206,7 +236,7 @@ namespace FloatingTodo
             {
                 Button due = CreateSmallActionRow(
                     UiKit.ClockIcon(13, "#FFD8D2E4", 1.15),
-                    task.DueAt.HasValue ? "更改截止时间" : "设置截止时间", false);
+                    task.DueAt.HasValue ? LanguageManager.T("更改截止时间") : LanguageManager.T("设置截止时间"), false);
                 due.Click += delegate
                 {
                     UIElement anchor = _contextAnchor;
@@ -219,7 +249,7 @@ namespace FloatingTodo
                 if (task.DueAt.HasValue)
                 {
                     Button clear = CreateSmallActionRow(
-                        UiKit.Icon("M3.2,8.2 L12.8,8.2", 12, "#FFAAA4B6", 1.25), "清除截止时间", false);
+                        UiKit.Icon("M3.2,8.2 L12.8,8.2", 12, "#FFAAA4B6", 1.25), LanguageManager.T("清除截止时间"), false);
                     clear.Click += delegate
                     {
                         _taskMenuPopup.IsOpen = false;
@@ -231,7 +261,7 @@ namespace FloatingTodo
                 }
 
                 Button complete = CreateSmallActionRow(
-                    UiKit.CheckIcon(13.5, "#FFD8D2E4", 1.35), "标记为已完成", false);
+                    UiKit.CheckIcon(13.5, "#FFD8D2E4", 1.35), LanguageManager.T("标记为已完成"), false);
                 complete.Click += delegate { _taskMenuPopup.IsOpen = false; ToggleDone(task); };
                 _taskMenuPanel.Children.Add(complete);
             }
@@ -239,7 +269,7 @@ namespace FloatingTodo
             {
                 Button restore = CreateSmallActionRow(
                     UiKit.Icon("M3,8 A5,5 0 1 1 5,12 M3,8 L3,4 M3,8 L7,8", 13.5, "#FFD8D2E4", 1.25),
-                    "恢复为待办", false);
+                    LanguageManager.T("恢复为待办"), false);
                 restore.Click += delegate { _taskMenuPopup.IsOpen = false; ToggleDone(task); };
                 _taskMenuPanel.Children.Add(restore);
             }
@@ -251,7 +281,7 @@ namespace FloatingTodo
             _taskMenuPanel.Children.Add(hair2);
             Button delete = CreateSmallActionRow(
                 UiKit.Icon("M3,4.7 L13,4.7 M6,4.7 L6,2.8 L10,2.8 L10,4.7 M4.4,4.7 L5.2,13.4 L10.8,13.4 L11.6,4.7 M7,7.1 L7,11.2 M9,7.1 L9,11.2",
-                    13, "#FFFF98A2", 1.2), "删除待办…", true);
+                    13, "#FFFF98A2", 1.2), LanguageManager.T("删除待办…"), true);
             delete.Click += delegate { _taskMenuPopup.IsOpen = false; ConfirmDeleteTask(task); };
             _taskMenuPanel.Children.Add(delete);
         }
